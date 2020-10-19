@@ -1,2 +1,4 @@
 data/
 .idea/
+poetry.lock
+pyproject.toml
