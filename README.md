@@ -1,4 +1,4 @@
-# tdt4173 - Machine Learning Project
+# TDT4173 - Machine Learning Project
 
 ## Topic
 
