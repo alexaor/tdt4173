@@ -23,7 +23,6 @@ def decision_tree(x_train, y_train, x_test, max_depth=None, splitter='best', max
     time_0 = time.time()
     print("Decision tree - start fitting...")
     dt_classifier.fit(x_train, y_train)
-    print("Decision tree - fit finished in {} s".format(round(time.time() - time_0, 3)))
+    print(f"Decision tree - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = dt_classifier.predict(x_test)
     return y_pred
-
