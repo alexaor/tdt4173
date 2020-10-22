@@ -13,7 +13,7 @@ import time
 
 :return y_pred: the predicted y values from the test set
 
-Creates a decision tree classifier with the given hyperparameters and trains the classifier. I returns
+Creates a decision tree classifier with the given hyperparameters and trains the classifier. It returns
 the predicted values after performing a test on the test input values.
 """
 
