@@ -23,9 +23,9 @@ decision tree with a max depth of 1.
 def adaBoost(x_train, y_train, x_test, save_model=False, filename="", learning_rate=1, n_estimators=50):
     ab_classifier = AdaBoostClassifier(learning_rate=learning_rate, n_estimators=n_estimators)
     time_0 = time.time()
-    print("Decision tree - start fitting...")
+    print("AdaBoost - start fitting...")
     ab_classifier.fit(x_train, y_train)
-    print(f"Decision tree - fit finished in {round(time.time() - time_0, 3)} s")
+    print(f"AdaBoost - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = ab_classifier.predict(x_test)
     if save_model and len(filename) > 0:
         pickle.dump(ab_classifier, open(filename, 'wb'))
