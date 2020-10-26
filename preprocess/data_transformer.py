@@ -21,6 +21,7 @@ def split_set(X, Y, size = 0.2, seed = None):
 @param index_list: List of column indexes that should be transformed
 """
 def encode_columns(X, index_list):
+    print(len(index_list))
     transformers=[('encoder'+str(i), OneHotEncoder(sparse = False), [index_list[i]])
                   for i in range(len(index_list))]
     ct = ColumnTransformer(transformers, remainder='passthrough')
@@ -47,9 +48,14 @@ def get_categorical_indexes(data_row):
 
 
 
+
+"""
+Writes a CSV with imputations and transformed categorical data.
+"""
 def preprocess():    
     dataset = pd.read_csv('speeddating.csv', dtype = 'str')
     X = dataset.iloc[:, :].values
+    print(X.shape)
     
     df = pd.DataFrame(X)
     df.to_csv('original.csv')
