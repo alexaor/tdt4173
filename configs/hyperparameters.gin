@@ -3,7 +3,9 @@
 # Import the python methods file to access their functions
 import methods.ada_boost
 import methods.decision_tree
+import methods.knn
 import methods.random_forest
+import methods.svc
 
 
 # Hyperparameters used in the AdaBoost classifier
@@ -15,6 +17,11 @@ decision_tree.max_depth = None          # int, the maximum depth of the tree, de
 decision_tree.splitter = 'best'         # {'best', 'random'}, strategy on how the node split is chosen
 decision_tree.max_features = None       # {'None', 'auto', 'sqrt', 'log2'}, the number of features to consider when splitting
 
+# Hyperparameters used in the k-nearest neighbors classifier
+knn.n_neighbors = 5                     # int, number of neighbors used in n neighbors queries
+knn.weights = 'uniform'                 # {‘uniform’, ‘distance’} or callable, what the weight on the neighbors should be
+knn.p = 2                               # int{1, 2}, 1 = manhatten distance, 2 = euclidean distance
+
 # Hyperparameters used in the random forest classifier
 random_forest.n_estimators = 100        # int, Number of trees in the forest
 random_forest.criterion = "gini"        # {“gini”, “entropy”}, function to measure the quality of a split
@@ -23,3 +30,11 @@ random_forest.max_features = "auto"     # {“auto”, “sqrt”, “log2”}, 
 random_forest.min_samples_split = 2     # int, min number of data points placed in a node before the node is split
 random_forest.min_samples_leaf = 1      # int, minimum number of samples required to be at a leaf node
 random_forest.bootstrap = True          # bool, method for sampling data points (with or without replacement)
+
+# Hyperparameters used in the support vector classifier
+svc.C = 1.0                             # float, regularization parameter.
+svc.kernel = 'rbf'                      # {‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’}, specifies the kernel type to be used in the algorithm
+# if using poly, need to specify svc.poly as well
+svc.gamma = 'scale'                     # {‘scale’, ‘auto’} or float, kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’
+svc.tol = 1e-3                          # float, tolerance for stopping
+svc.max_iter = -1                       # int, Hard limit on iterations within solver (epochs), -1 is no limit
