@@ -12,7 +12,7 @@ import gin
 
 :return y_pred: the predicted y values from the test set
 
-Creates an random forest classifier with the given hyperparameters and trains the classifier. It returns
+Creates a random forest classifier with the given hyperparameters and trains the classifier. It returns
 the predicted values after performing a test on the test input values.
 """
 
