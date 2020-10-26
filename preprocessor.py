@@ -21,31 +21,56 @@ def split_set(X, Y, size = 0.2, seed = None):
 @param index_list: List of column indexes that should be transformed
 """
 def encode_columns(X, index_list):
-    transformers=[('encoder'+str(i), OneHotEncoder(), [i]) for i in index_list]
+    transformers=[('encoder'+str(i), OneHotEncoder(sparse = False), [index_list[i]])
+                  for i in range(len(index_list))]
     ct = ColumnTransformer(transformers, remainder='passthrough')
     X = np.array(ct.fit_transform(X))
     return X
 
+def impute_data(X):
+    imputer = SimpleImputer(missing_values='?', strategy='most_frequent')
+    imputer.fit(X)
+    X_imputed = imputer.transform(X)
+    return X_imputed    
+
+
+#Returns a list of indexes corresponding to the columns of our categorical data
+def get_categorical_indexes(data_row):
+    index_list = []
+    for i in range(len(data_row)):
+        try: 
+            _val = int(data_row[i])
+            pass
+        except:
+            index_list.append(i)
+    return index_list
 
 
 
-def preprocess():
-    dataset = pd.read_csv('speeddating.csv')
+def preprocess():    
+    dataset = pd.read_csv('speeddating.csv', dtype = 'str')
+    X = dataset.iloc[:, :].values
     
-    ### implement feature selection
-    X = dataset.iloc[:4, :-1]
-    Y = dataset.iloc[:4, -1].values
-    print(X)
+    df = pd.DataFrame(X)
+    df.to_csv('original.csv')
     
-    ### Transform categorical data
-    indexes = [i for i in range(X.shape[1])]
-    print(indexes)
-    print(encode_columns(X, indexes))
-    ### Transform categorical data
+    ### Take care of missing data ###
+    imputed_data = impute_data(X)
+          
+    df = pd.DataFrame(imputed_data)
+    df.to_csv('imputed.csv')
+
+
+    ### Transform categorical data ###
+    categorical_indexes = get_categorical_indexes(X[0, :])
+    transformed_data = encode_columns(X, categorical_indexes)
     
+    df = pd.DataFrame(transformed_data)
+    df.to_csv('transformed.csv')
+    print(transformed_data.shape)
+    print(transformed_data[:, 600:])
     
     ### implement scaling ###
     
-    return split_set(X, Y)
 
-X_train, X_test, Y_train, Y_test = preprocess()
+preprocess()
