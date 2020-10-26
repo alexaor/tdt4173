@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
-
+from sklearn.preprocessing import StandardScaler
 
 """
 @param X: Independent variable array
@@ -21,7 +21,6 @@ def split_set(X, Y, size = 0.2, seed = None):
 @param index_list: List of column indexes that should be transformed
 """
 def encode_columns(X, index_list):
-    print(len(index_list))
     transformers=[('encoder'+str(i), OneHotEncoder(sparse = False), [index_list[i]])
                   for i in range(len(index_list))]
     ct = ColumnTransformer(transformers, remainder='passthrough')
@@ -46,16 +45,12 @@ def get_categorical_indexes(data_row):
             index_list.append(i)
     return index_list
 
-
-
-
 """
 Writes a CSV with imputations and transformed categorical data.
 """
-def preprocess():    
-    dataset = pd.read_csv('speeddating.csv', dtype = 'str')
+def transform_data():    
+    dataset = pd.read_csv('../speeddating.csv', dtype = 'str')
     X = dataset.iloc[:, :].values
-    print(X.shape)
     
     df = pd.DataFrame(X)
     df.to_csv('original.csv')
@@ -73,10 +68,7 @@ def preprocess():
     
     df = pd.DataFrame(transformed_data)
     df.to_csv('transformed.csv')
-    print(transformed_data.shape)
-    print(transformed_data[:, 600:])
     
-    ### implement scaling ###
     
 
-preprocess()
+transform_data()
