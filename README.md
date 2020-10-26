@@ -1,2 +1,9 @@
-# tdt4173
-blabla
+# TDT4173 - Machine Learning Project
+
+## Topic
+
+## Dependencies
+
+## Docs
+
+[Project Homepage](https://alexaor.github.io/tdt4173/)
