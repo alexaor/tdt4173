@@ -1,4 +1,4 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 import time
 import pickle
 import gin
@@ -12,22 +12,23 @@ import gin
 
 :return y_pred: the predicted y values from the test set
 
-Creates an random forest classifier with the given hyperparameters and trains the classifier. It returns
-the predicted values after performing a test on the test input values.
+Creates an AdaBoost classifier with the given hyperparameters and trains the classifier. It returns
+the predicted values after performing a test on the test input values. It is using the base estimator, which is
+decision tree with a max depth of 1.
 """
 
 
 @gin.configurable
-def random_forest(x_train, y_train, x_test, filename="", **kwargs):
-    rf_classifier = RandomForestClassifier(**kwargs)
+def ada_boost(x_train, y_train, x_test, filename="", **kwargs):
+    ab_classifier = AdaBoostClassifier(**kwargs)
     time_0 = time.time()
-    print("Random forest - start fitting...")
-    rf_classifier.fit(x_train, y_train)
-    print(f"Random forest - fit finished in {round(time.time() - time_0, 3)} s")
-    y_pred = rf_classifier.predict(x_test)
+    print("AdaBoost - start fitting...")
+    ab_classifier.fit(x_train, y_train)
+    print(f"AdaBoost - fit finished in {round(time.time() - time_0, 3)} s")
+    y_pred = ab_classifier.predict(x_test)
     if len(filename) > 0:
         if filename.endswith('.sav'):
-            pickle.dump(rf_classifier, open(filename, 'wb'))
+            pickle.dump(ab_classifier, open(filename, 'wb'))
             print(f"Model saved as: {filename}")
         else:
             print(f"file extension unknown: {filename.split('.')[-1]} \t\t-->\t did not save file")

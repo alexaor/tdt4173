@@ -1,0 +1,25 @@
+# Hyperparameters used in our different machine learning models
+
+# Import the python methods file to access their functions
+import methods.ada_boost
+import methods.decision_tree
+import methods.random_forest
+
+
+# Hyperparameters used in the AdaBoost classifier
+ada_boost.learning_rate = 1             # float, shrinks the contribution of each classifier
+ada_boost.n_estimators = 50             # int, max number of estimators (trees in the forest) at which boosting is terminated
+
+# Hyperparameters used in the decision tree classifier
+decision_tree.max_depth = None          # int, the maximum depth of the tree, default at None
+decision_tree.splitter = 'best'         # {'best', 'random'}, strategy on how the node split is chosen
+decision_tree.max_features = None       # {'None', 'auto', 'sqrt', 'log2'}, the number of features to consider when splitting
+
+# Hyperparameters used in the random forest classifier
+random_forest.n_estimators = 100        # int, Number of trees in the forest
+random_forest.criterion = "gini"        # {“gini”, “entropy”}, function to measure the quality of a split
+random_forest.max_depth = None          # int, maximum depth of the tree
+random_forest.max_features = "auto"     # {“auto”, “sqrt”, “log2”}, max number of features considered for splitting a node
+random_forest.min_samples_split = 2     # int, min number of data points placed in a node before the node is split
+random_forest.min_samples_leaf = 1      # int, minimum number of samples required to be at a leaf node
+random_forest.bootstrap = True          # bool, method for sampling data points (with or without replacement)
