@@ -16,9 +16,9 @@ from tools import get_categorical_indexes
 def reduce_data_set(source, target):
     print("Creating reduced set from "+source+", and storing in "+target+"....")
 
-    rows = np.r_[:10]
+    rows = np.r_[:15]
     columns = np.r_[:15, -4:0]
-    reduced = create_reduced_set(rows, columns)
+    reduced = create_reduced_set(rows, columns, source)
 
     df = pd.DataFrame(reduced)
     df.to_csv(target)
@@ -46,13 +46,13 @@ def encode_data_set(source, target):
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    #reduce_data_set("speeddating.csv", "reduced.csv")
+    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
 
     #%% Imputing the missing data '?' ###
-    #impute_data_set("reduced.csv", "imputed.csv")
+    impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
 
     #%% Encode categorical data from an imputed csv ###
-    encode_data_set("imputed.csv", "encoded.csv")
+    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
 
 
 if __name__ == "__main__":

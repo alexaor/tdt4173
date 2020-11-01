@@ -20,11 +20,11 @@ def split_set(X, Y, size = 0.2, seed = None):
 @param rows: list of row slices in reduced set
 @param columns: list of column slices in reduced set
 """
-def create_reduced_set(rows, columns):
+def create_reduced_set(rows, columns, source):
     print("\n___Creating reduced csv___")
     print("Row indexes: " + str(rows))
     print("Columns indexes: " + str(columns)+"\n")
-    dataset = pd.read_csv('speeddating.csv')
+    dataset = pd.read_csv(source)
     X = dataset.iloc[rows, columns].values
     return X
 
