@@ -12,8 +12,8 @@ from sklearn.preprocessing import StandardScaler
 @param size: Size of test set (between 0 and 1)
 @param seed: Optional seed for reproducing results
 """
-def split_set(X, Y, size = 0.2, seed = None):
-    return train_test_split(X, Y, test_size = size, random_state = seed) 
+def split_set(X, size = 0.2, seed = None):
+    return train_test_split(X, test_size = size, random_state = seed) 
 
 
 """
