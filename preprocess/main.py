@@ -11,16 +11,18 @@ from tools import impute_data
 - Normalize data set:
 """
 
-def reduce_data_set():
+def reduce_data_set(source, target):
+    print("Creating reduced set from "+source+", and storing in "+target+"....")
+
     rows = np.r_[:10]
-    columns = np.r_[:20, -4:0]
-    create_reduced_set(rows, columns, "reduced.csv")
+    columns = np.r_[:20, -10:0]
+    reduced = create_reduced_set(rows, columns)
 
-def impute_data_set():
-    source = "reduced.csv"
-    target = "imputed.csv"
-
-    print("Imputing "+source+" to "+target)
+    df = pd.DataFrame(reduced)
+    df.to_csv(target)
+    
+def impute_data_set(source, target):
+    print("Imputing data from "+source+" to "+target+"....")
 
     dataset = pd.read_csv(source)
     X = dataset.iloc[:, 1:].values
@@ -29,18 +31,25 @@ def impute_data_set():
     df = pd.DataFrame(imputed)
     df.to_csv(target)
 
-def encode_data_set():
-    print("hello world")
+def encode_data_set(source, target):
+    print("encoding data from "+source+" to "+target)
+
+    dataset = pd.read_csv(source)
+    X = dataset.iloc[:, 1:].values
+    encoded = encode_data(X)
+
+    df = pd.DataFrame(imputed)
+    df.to_csv(target)
 
 def main():
-    #%% Creates a reduced csv file with rows, columns and filename specified in create_reduced_csv() ###
-    #reduce_data_set()
+    #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
+    reduce_data_set("speeddating.csv", "reduced.csv")
 
-    #%% Imputing the missing data, make sure that you change the filename if neccesary ###
-    #impute_data_set()
+    #%% Imputing the missing data '?' ###
+    impute_data_set("reduced.csv", "imputed.csv")
 
-    #%% Encode categorical data, converting each category into its own column and setting value 1 if the corresponding row belongs to that category ###
-    encode_data_set()
+    #%% Encode categorical data from an imputed csv ###
+    #encode_data_set("imputed.csv", "encoded.csv")
 
 
 if __name__ == "__main__":
