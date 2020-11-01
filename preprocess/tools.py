@@ -26,6 +26,18 @@ def impute_data(X):
     X_imputed = imputer.transform(X)
     return X_imputed    
 
+"""
+@param X: Array of variables to encode
+@param index_list: List of column indexes that should be transformed
+"""
+def encode_columns(X, index_list):
+    print(len(index_list))
+    transformers=[('encoder'+str(i), OneHotEncoder(sparse = False), [index_list[i]])
+                  for i in range(len(index_list))]
+    ct = ColumnTransformer(transformers, remainder='passthrough')
+    X = np.array(ct.fit_transform(X))
+    return X
+
 
 """
 @param X_train: Array of training data
