@@ -17,6 +17,20 @@ def split_set(X, Y, size = 0.2, seed = None):
 
 
 """
+@param rows: list of row slices in reduced set
+@param columns: list of column slices in reduced set
+"""
+def create_reduced_set(rows, columns, filename = "reduced_csv"):
+    print("Creating reduced csv with name: "+filename)
+    print("Number of rows: " + str(rows))
+    print("Number of columns: " + str(columns))
+    dataset = pd.read_csv('speeddating.csv')
+    X = dataset.iloc[rows, columns].values
+    df = pd.DataFrame(X)
+    df.to_csv(filename)
+
+
+"""
 @param X: Array of variables to encode
 @param index_list: List of column indexes that should be transformed
 """

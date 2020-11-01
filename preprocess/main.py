@@ -1,32 +1,31 @@
 import numpy as np
 import pandas as pd
+from tools import impute_data
+from tools import create_reduced_set
 
-def create_reduced_set():
-    dataset = pd.read_csv('speeddating.csv', dtype = 'str')
-    X = dataset.iloc[:6, np.r_[1:20,-2,-1]].values
-    df = pd.DataFrame(X)
-    df.to_csv("reduced.csv")
+""" CHECKLIST:
+- reduced set: check
 
-def transform_data():    
-    dataset = pd.read_csv('speeddating.csv', dtype = 'str')
+
+"""
+
+
+def create_subset():
+    rows = np.r_[:10]
+    columns = np.r_[:20, -4:0]
+    create_reduced_set(rows, columns, "reduced.csv")
+
+
+def main():
+    create_subset()
+    dataset = pd.read_csv('reduced.csv')
     X = dataset.iloc[:, :].values
-    
-    df = pd.DataFrame(X)
-    df.to_csv('original.csv')
-    
-    ### Take care of missing data ###
-    imputed_data = impute_data(X)
-          
-    df = pd.DataFrame(imputed_data)
+    imputed = impute_data(X)
+
+    df = pd.DataFrame(imputed)
     df.to_csv('imputed.csv')
+    
 
+if __name__ == "__main__":
+    main()
 
-    ### Transform categorical data ###
-    categorical_indexes = get_categorical_indexes(X[0, :])
-    transformed_data = encode_columns(X, categorical_indexes)
-    
-    df = pd.DataFrame(transformed_data)
-    df.to_csv('transformed.csv')
-    
-    
-create_reduced_set()
