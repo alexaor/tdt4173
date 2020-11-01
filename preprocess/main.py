@@ -12,13 +12,13 @@ from tools import scale_data
 - Impute missing data: CHECK
 - Encode categorical data: CHECK
 - Split data set: CHECK
-- Normalize data set:
+- Normalize data set: CHECK
 """
 
 def reduce_data_set(source, target):
     print("Creating reduced set from "+source+", and storing in "+target+"....")
 
-    rows = np.r_[:15]
+    rows = np.r_[:200]
     columns = np.r_[:15, -4:0]
     reduced = create_reduced_set(rows, columns, source)
 
@@ -28,7 +28,7 @@ def reduce_data_set(source, target):
 def impute_data_set(source, target):
     print("Imputing data from "+source+" to "+target+"....")
 
-    dataset = pd.read_csv(source)
+    dataset = pd.read_csv(source, dtype = "str")
     X = dataset.iloc[:, 1:].values
     imputed = impute_data(X)
     
@@ -76,7 +76,7 @@ def standarize_data_set(training_source, test_source, training_dir, test_dir):
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    #reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
+    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
 
     #%% Imputing the missing data '?' ###
     #impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
@@ -88,7 +88,7 @@ def main():
     #split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
 
     #%% Performe feature scaling on training set and test set ###
-    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/training_set.csv", "datasets/test_set.csv")
+    #standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/training_set.csv", "datasets/test_set.csv")
 
 if __name__ == "__main__":
     main()
