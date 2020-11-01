@@ -40,7 +40,6 @@ def encode_data_set(source, target):
 
     dataset = pd.read_csv(source)
     df = encode_data(dataset)
-
     df.to_csv(target, index = False)
 
 def split_data_set(source, training_dir, test_dir):
@@ -48,11 +47,11 @@ def split_data_set(source, training_dir, test_dir):
 
     dataset = pd.read_csv(source)
     X = dataset.iloc[:, :].values
-    X_train, X_test = split_set(X, seed = 12) 
+    X_train, X_test = split_set(X, seed = 69) 
 
-    df = pd.DataFrame(X_train)
+    df = pd.DataFrame(X_train, columns = dataset.columns.values)
     df.to_csv(training_dir, index = False)
-    df = pd.DataFrame(X_test)
+    df = pd.DataFrame(X_test, columns = dataset.columns.values)
     df.to_csv(test_dir, index = False)
 
 def standarize_data_set(training_source, test_source, training_dir, test_dir):
@@ -66,9 +65,9 @@ def standarize_data_set(training_source, test_source, training_dir, test_dir):
 
     X_train, X_test = scale_data(X_train_raw, X_test_raw)
 
-    df = pd.DataFrame(X_train)
+    df = pd.DataFrame(X_train, columns = training_set.columns.values)
     df.to_csv(training_dir, index = False)
-    df = pd.DataFrame(X_test)
+    df = pd.DataFrame(X_test, columns = test_set.columns.values)
     df.to_csv(test_dir, index = False)
 
 def main():
@@ -79,13 +78,13 @@ def main():
     #impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
 
     #%% Encode categorical data from an imputed csv ###
-    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
+    #encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
 
     #%% Split dataset into training and test set ###
     #split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
 
     #%% Performe feature scaling on training set and test set ###
-    #standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/training_set.csv", "datasets/test_set.csv")
+    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/training_set.csv", "datasets/test_set.csv")
 
 if __name__ == "__main__":
     main()
