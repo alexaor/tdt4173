@@ -56,10 +56,10 @@ def encode_data(X, index_list):
 @param X_train: Array of training data
 @param X_test: Array of test data
 """
-def scale_data(X_train, X_test):
+def scale_data(X_train_raw, X_test_raw):
     sc = StandardScaler()
-    X_train[:, 598:] = sc.fit_transform(X_train[:, 598:])
-    X_test[:, 598:] = sc.transform(X_test[:, 598:])
+    X_train = sc.fit_transform(X_train_raw)
+    X_test = sc.transform(X_test_raw)
     return X_train, X_test
 
 """
