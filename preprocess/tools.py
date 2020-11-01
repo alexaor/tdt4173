@@ -43,8 +43,8 @@ def impute_data(X):
 @param X: Array of variables to encode
 @param index_list: List of column indexes that should be transformed
 """
-def encode_columns(X, index_list):
-    print(len(index_list))
+def encode_data(X, index_list):
+    print("___transforming columns "+str(index_list)+"___")
     transformers=[('encoder'+str(i), OneHotEncoder(sparse = False), [index_list[i]])
                   for i in range(len(index_list))]
     ct = ColumnTransformer(transformers, remainder='passthrough')
