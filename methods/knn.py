@@ -1,6 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
 import time
-import pickle
+import methods.utils as utils
 import gin
 
 """
@@ -27,9 +27,5 @@ def knn(x_train, y_train, x_test, filename="", **kwargs):
     print(f"KNN - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = knn_classifier.predict(x_test)
     if len(filename) > 0:
-        if filename.endswith('.sav'):
-            pickle.dump(knn_classifier, open(filename, 'wb'))
-            print(f"Model saved as: {filename}")
-        else:
-            print(f"file extension unknown: {filename.split('.')[-1]} \t\t-->\t did not save file")
+        utils.save_sklearn_model(filename, knn_classifier)
     return y_pred
