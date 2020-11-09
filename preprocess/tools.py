@@ -9,17 +9,20 @@ from sklearn.feature_selection import SelectKBest
 
 
 """
-@param rows: list of row slices in reduced set
-@param columns: list of column slices in reduced set
+:param rows: list of row slices in reduced set
+:param columns: list of column slices in reduced set
+
+:return (X, column_values): 
+    X:              np.array(rows*columns) reduced data set
+    column_labels:  list of column labels
 """
 def create_reduced_set(rows, columns, source):
-    print("\n___Creating reduced csv___")
-    print("Row indexes: " + str(rows))
-    print("Columns indexes: " + str(columns)+"\n")
     dataset = pd.read_csv(source)
     X = dataset.iloc[rows, columns].values
-    column_values = dataset.columns.values[columns]
-    return X, column_values
+
+    column_labels = dataset.columns.values[columns]
+
+    return X, column_labels
 
 
 """
