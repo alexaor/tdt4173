@@ -10,7 +10,7 @@ import gin
 :param filename:     string, name of the file of the trained model, need to have file extension ".sav"
 :param **kwargs:     hyperparameters to the classifier, which is being defined in configs/hyperparameters.gin
 
-:return y_pred: the predicted y values from the test set
+:return y_pred:     The predicted y values from the test set
 
 Creates a k-nearest neighbors classifier with the given hyperparameters and trains the classifier. It returns
 the predicted values after performing a test on the test input values. There is also possible to save the trained model
@@ -23,7 +23,8 @@ def knn(x_train, y_train, x_test, filename="", **kwargs):
     knn_classifier = KNeighborsClassifier(**kwargs)
     time_0 = time.time()
     print("KNN - start fitting...")
-    knn_classifier.fit(x_train, y_train)
+    for i in range(len(x_train)):
+        knn_classifier.fit(x_train[i], y_train[i])
     print(f"KNN - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = knn_classifier.predict(x_test)
     if len(filename) > 0:

@@ -32,11 +32,11 @@ class DNN:
             layers.Dense(128, activation='relu', input_shape=input_shape),
             layers.Dense(128, activation='relu'),
             layers.Dropout(dropout),
-            layers.Dense(2)
+            layers.Dense(1)
         ])
 
     def fit_model(self, x_train, y_train):
-        self.model.fit(x_train, y_train, self._kwargs)
+        self.model.fit(x_train, y_train, **self._kwargs)
 
     def save_model(self, modelname):
         utils.save_tf_model(modelname, self.model)
