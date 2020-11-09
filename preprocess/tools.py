@@ -100,31 +100,19 @@ def scale_data(X_train_raw, X_test_raw):
 
 
 
-def feature_select(train_set, test_set):
-    X_train = train_set.iloc[:, :-1].values
-    Y_train = train_set.iloc[:, -1].values
-    X_test = test_set.iloc[:, :-1].values
-    Y_test = test_set.iloc[:, -1].values
-      
-    X = np.concatenate((X_train, X_test))
-    Y = np.concatenate((Y_train, Y_test))
+def feature_select(Z, n):
+    X = Z.iloc[:, :-1].values
+    Y = Z.iloc[:, -1].values
 
-    
-    feature_selector = SelectKBest(k = 10)
+    feature_selector = SelectKBest(k = n)
     feature_selector.fit(X, Y)
     
     column_selections = feature_selector.get_support()
-    #cat_col_names = [element for element in cat_col_names if element[0] != "x"]
     selected_cols = [col for col in range(len(column_selections)) if column_selections[col]]
     
-    X_train_reduced = feature_selector.transform(X_train)
-    X_test_reduced = feature_selector.transform(X_test)
-    
-    Y_train = Y_train.reshape(Y_train.shape[0], 1)
-    Y_test = Y_test.reshape(Y_test.shape[0], 1)
-    
-    new_training_set = np.hstack((X_train_reduced, Y_train))
-    new_test_set = np.hstack((X_test_reduced, Y_test))
-    
-    return new_training_set, new_test_set, selected_cols
+    X = feature_selector.transform(X)
+    Y = Y.reshape(Y.shape[0], 1)
+    X_new = np.hstack((X, Y))
+
+    return X_new, selected_cols
     
