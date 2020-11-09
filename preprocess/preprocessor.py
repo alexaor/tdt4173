@@ -23,16 +23,36 @@ from sklearn.model_selection import KFold
 - Dobbeltsjekke 
 """
 
-def reduce_data_set(source, target):
+
+
+"""
+:param source:  filename of csv to be reduced
+:param target:  filename of new csv to be made
+:param rows:    row indexes to be included in reduced data set
+:param columns: column indexes to be included in reduced data set
+
+:return void
+
+Reduce csv from source to target. Keep only rows and columns specified by 
+    arguments given in function call.
+
+"""
+def reduce_data_set(source, target, rows, columns):
     print("Creating reduced set from "+source+", and storing in "+target+"....")
+    reduced, column_names = create_reduced_set(rows, columns, source)
 
-    rows = np.r_[:200]
-    columns = np.r_[:]
-    reduced, names = create_reduced_set(rows, columns, source)
-
-    df = pd.DataFrame(reduced, columns = names)
+    df = pd.DataFrame(reduced, columns = column_names)
     df.to_csv(target, index = False)
     
+
+"""
+:param source:  filename of dataset to be imputed
+:param target:  filename of new csv to be made
+
+:return void
+
+Fill inn missing values from source and write new data set to target.
+"""
 def impute_data_set(source, target):
     print("Imputing data from "+source+" to "+target+"....")
 
@@ -43,6 +63,15 @@ def impute_data_set(source, target):
     df = pd.DataFrame(imputed, columns = dataset.columns.values)
     df.to_csv(target, index = False)
 
+"""
+:param source:  filename of dataset to be encoded
+:param target:  filename of new csv to be made
+
+:return void
+
+Encode categorical data from source by means of one hot encoding. Write result
+    to target.
+"""
 def encode_data_set(source, target):
     print("encoding data from "+source+" to "+target+"....")
     
@@ -50,6 +79,15 @@ def encode_data_set(source, target):
     df = encode_data(dataset)
     df.to_csv(target, index = False)
 
+
+"""
+:param source:  filename of dataset to be reduced
+:param target:  filename of new csv to be made
+:param n:       number of features to be selected
+:return void
+
+Reduce dataset from source to n features. Write result to target.
+"""
 def feature_selection(source, target, n):
     print("Performing feature selection from "+source+" to "+target)
     
@@ -64,20 +102,77 @@ def feature_selection(source, target, n):
     df.to_csv(target, index = False)
     
 
+"""
+:param source:          filename of dataset to be split
+:param train_target:    filename of new csv to be made with training data
+:param test_target:     filename of new csv to be made with test data
 
-def split_data_set(source, training_dir, test_dir):
-    print("Splitting data set from "+source+" to "+training_dir+" and "+test_dir)
+:return void
+
+Split dataset from source into training and test data. Write result to
+    train_target and test_target respectively
+"""
+def split_data_set(source, train_target, test_target):
+    print("Splitting data set from "+source+" to "+train_target+" and "+test_target)
 
     dataset = pd.read_csv(source)
     X = dataset.iloc[:, :].values
     X_train, X_test = split_set(X, seed = 69) 
 
     df = pd.DataFrame(X_train, columns = dataset.columns.values)
-    df.to_csv(training_dir, index = False)
+    df.to_csv(train_target, index = False)
     df = pd.DataFrame(X_test, columns = dataset.columns.values)
-    df.to_csv(test_dir, index = False)
+    df.to_csv(test_target, index = False)
 
+
+"""
+:param train_source:    filename of training_set to be normalized
+:param test_source:     filename of test_set to be normalized
+:param train_target:    filename of csv to be made with scaled training_set
+:param test_target:     filename of csv to be made with scaled test_set  
+
+:return void
+
+Fit transformer with data from train_source. Standarize train- and testset and
+    write to corresponding targets. 
+""" 
+def standarize_data_set(train_source, test_source, train_target, test_target):
+    print("Performing feature scaling on dataset from "+train_source+" and "+test_source)
+    print("Result from scaling is found in "+train_target+" and "+test_target)
+
+    ## Retrieve X and y sets ##
+    training_set = pd.read_csv(train_source)
+    X_train = training_set.iloc[:, :-1].values
+    y_train = training_set.iloc[:, -1].values
     
+    test_set = pd.read_csv(test_source)
+    X_test = test_set.iloc[:, :-1].values
+    y_test = test_set.iloc[:, -1].values
+
+    ## Shape and standarize ##
+    y_train = y_train.reshape(y_train.shape[0], 1)
+    y_test = y_test.reshape(y_test.shape[0], 1)
+
+    X_train_norm, X_test_norm = scale_data(X_train, X_test)
+
+    new_training_set = np.hstack((X_train_norm, y_train))
+    new_test_set = np.hstack((X_test_norm, y_test))
+    
+    ## Write to target ##
+    df = pd.DataFrame(new_training_set, columns = training_set.columns.values)
+    df.to_csv(train_target, index = False)
+    df = pd.DataFrame(new_test_set, columns = test_set.columns.values)
+    df.to_csv(test_target, index = False)
+    
+    
+"""
+:param source:  filename of dataset to create k-fold from
+:param k:       specifies number of splits
+
+:return void
+
+Create k different splits from source and write to K-fold folder
+"""
 def create_k_fold(source, k):
     target = pathlib.Path("datasets/K-fold/K"+str(k))
     target.mkdir(exist_ok = True, parents = True)
@@ -114,59 +209,30 @@ def create_k_fold(source, k):
         
         
         print(X_train.shape)
-        ## normalize for different train/test splits
-        
-
-def standarize_data_set(training_source, test_source, training_dir, test_dir):
-    print("Performing feature scaling on dataset from "+training_source+" and "+test_source)
-    print("Result from scaling is found in "+training_dir+" and "+test_dir)
-
-    training_set = pd.read_csv(training_source)
-    X_train_raw = training_set.iloc[:, :-1].values
-    y_train_raw = training_set.iloc[:, -1].values
-    
-    test_set = pd.read_csv(test_source)
-    X_test_raw = test_set.iloc[:, :-1].values
-    y_test_raw = test_set.iloc[:, -1].values
-
-    y_train = y_train_raw.reshape(y_train_raw.shape[0], 1)
-    y_test = y_test_raw.reshape(y_test_raw.shape[0], 1)
-
-    X_train, X_test = scale_data(X_train_raw, X_test_raw)
-
-    new_training_set = np.hstack((X_train, y_train))
-    new_test_set = np.hstack((X_test, y_test))
-    
-
-    df = pd.DataFrame(new_training_set, columns = training_set.columns.values)
-    df.to_csv(training_dir, index = False)
-    df = pd.DataFrame(new_test_set, columns = test_set.columns.values)
-    df.to_csv(test_dir, index = False)
-    
-    
-    
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    #reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
+    rows = np.r_[:200]  #Max row is 8378
+    columns = np.r_[:21, -1]  #Max col is 123
+    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv", rows, columns)
 
     #%% Imputing the missing data '?' ###
-    #impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
+    impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
 
     #%% Encode categorical data from an imputed csv ###
-    #encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
+    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
 
-    #%% Performe feature selection to reduce data set size and avoid overfitting (hopefully)
-    #feature_selection("datasets/encoded.csv", "datasets/feature_reduced_set.csv", 20)
+    #%% Performe feature selection to reduce data set size and reduce overfitting ###
+    feature_selection("datasets/encoded.csv", "datasets/feature_reduced_set.csv", 20)
     
     #%% Split dataset into training and test set ###
-    #split_data_set("datasets/feature_reduced_set.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
+    split_data_set("datasets/feature_reduced_set.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
 
     #%% Performe feature scaling on training set and test set ###
-    #standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv")
+    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv")
 
     #%% Create K-fold set
-    create_k_fold("datasets/encoded.csv", 10)
+    create_k_fold("datasets/encoded.csv", 7)
 
 
 if __name__ == "__main__":
