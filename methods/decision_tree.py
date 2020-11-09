@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 from sklearn.tree import DecisionTreeClassifier
 import time
-import pickle
+import methods.utils as utils
 import gin
 
 """
@@ -23,13 +22,10 @@ def decision_tree(x_train, y_train, x_test, filename="", **kwargs):
     dt_classifier = DecisionTreeClassifier(**kwargs)
     time_0 = time.time()
     print("Decision tree - start fitting...")
-    dt_classifier.fit(x_train, y_train)
+    for i in range(len(x_train)):
+        dt_classifier.fit(x_train[i], y_train[i])
     print(f"Decision tree - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = dt_classifier.predict(x_test)
     if len(filename) > 0:
-        if filename.endswith('.sav'):
-            pickle.dump(dt_classifier, open(filename, 'wb'))
-            print(f"Model saved as: {filename}")
-        else:
-            print(f"file extension unknown: {filename.split('.')[-1]} \t\t-->\t did not save file")
+        utils.save_sklearn_model(filename, dt_classifier)
     return y_pred

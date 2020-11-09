@@ -1,6 +1,6 @@
 from sklearn.svm import SVC
 import time
-import pickle
+import methods.utils as utils
 import gin
 
 """
@@ -21,13 +21,10 @@ def svc(x_train, y_train, x_test, filename="", **kwargs):
     svm_classifier = SVC(**kwargs)
     time_0 = time.time()
     print("SVC - start fitting...")
-    svm_classifier.fit(x_train, y_train)
+    for i in range(len(x_train)):
+        svm_classifier.fit(x_train[i], y_train[i])
     print(f"SVC - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = svm_classifier.predict(x_test)
     if len(filename) > 0:
-        if filename.endswith('.sav'):
-            pickle.dump(svm_classifier, open(filename, 'wb'))
-            print(f"Model saved as: {filename}")
-        else:
-            print(f"file extension unknown: {filename.split('.')[-1]} \t\t-->\t did not save file")
+        utils.save_sklearn_model(filename, svm_classifier)
     return y_pred

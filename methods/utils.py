@@ -69,7 +69,7 @@ def load_tf_model(modelname):
         
 def get_dataset(filename):
     dataset = pd.read_csv(os.path.join(dataset_path, filename))
-    x_train = dataset.iloc[:, :-2].values
-    y_train = dataset.iloc[:, -2:].values
+    x_train = dataset.iloc[:, :-3].values
+    y_train = dataset.iloc[:, -1].values
     return x_train, y_train
 

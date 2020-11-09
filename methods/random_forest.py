@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 import time
-import pickle
+import methods.utils as utils
 import gin
 
 """
@@ -22,13 +22,10 @@ def random_forest(x_train, y_train, x_test, filename="", **kwargs):
     rf_classifier = RandomForestClassifier(**kwargs)
     time_0 = time.time()
     print("Random forest - start fitting...")
-    rf_classifier.fit(x_train, y_train)
+    for i in range(len(x_train)):
+        rf_classifier.fit(x_train[i], y_train[i])
     print(f"Random forest - fit finished in {round(time.time() - time_0, 3)} s")
     y_pred = rf_classifier.predict(x_test)
     if len(filename) > 0:
-        if filename.endswith('.sav'):
-            pickle.dump(rf_classifier, open(filename, 'wb'))
-            print(f"Model saved as: {filename}")
-        else:
-            print(f"file extension unknown: {filename.split('.')[-1]} \t\t-->\t did not save file")
+        utils.save_sklearn_model(filename, rf_classifier)
     return y_pred

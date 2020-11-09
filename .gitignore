@@ -2,3 +2,6 @@ data/
 .idea/
 poetry.lock
 pyproject.toml
+methods/__init__.py
+methods/__pycache__/
+evaluate/__pycache__/
