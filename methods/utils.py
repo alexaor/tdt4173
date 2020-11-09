@@ -1,10 +1,13 @@
 import pathlib
 import pickle
 import os
+import pandas as pd
+import numpy as np
 from tensorflow.keras.models import load_model
 
 model_output_dir = pathlib.Path('saved_models')
 model_output_dir.mkdir(exist_ok=True, parents=True)
+dataset_path = pathlib.Path('preprocess/datasets')
 
 """
 :param modelpath:   string, path to the model
@@ -62,3 +65,11 @@ def load_tf_model(modelname):
     else:
         print(f"Could not find the directory: {modelpath}")
         exit(1)
+        
+        
+def get_dataset(filename):
+    dataset = pd.read_csv(os.path.join(dataset_path, filename))
+    x_train = dataset.iloc[:, :-2].values
+    y_train = dataset.iloc[:, -2:].values
+    return x_train, y_train
+
