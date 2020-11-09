@@ -25,7 +25,7 @@ def reduce_data_set(source, target):
     print("Creating reduced set from "+source+", and storing in "+target+"....")
 
     rows = np.r_[:200]
-    columns = np.r_[:15, -4:0]
+    columns = np.r_[:20, -1]
     reduced, names = create_reduced_set(rows, columns, source)
 
     df = pd.DataFrame(reduced, columns = names)
@@ -110,22 +110,22 @@ def feature_selection(training_source, test_source, training_dir, test_dir):
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    #reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
+    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
 
     #%% Imputing the missing data '?' ###
-    #impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
+    impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
 
     #%% Encode categorical data from an imputed csv ###
-    #encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
+    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
 
     #%% Split dataset into training and test set ###
-    #split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
+    split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
 
     #%% Performe feature scaling on training set and test set ###
-    #standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/beta_training_set.csv", "datasets/beta_test_set.csv")
+    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv")
 
     #%% Performe feature selection to reduce data set size and avoid overfitting (hopefully)
-    feature_selection("datasets/beta_training_set.csv", "datasets/beta_test_set.csv", "datasets/beta_reduced_training.csv", "datasets/beta_reduced_test.csv")
+    feature_selection("datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv", "datasets/feature_reduced_training_set.csv", "datasets/feature_reduced_test_set.csv")
     
 
 
