@@ -64,15 +64,25 @@ def standarize_data_set(training_source, test_source, training_dir, test_dir):
     print("Result from scaling is found in "+training_dir+" and "+test_dir)
 
     training_set = pd.read_csv(training_source)
-    X_train_raw = training_set.iloc[:, :]
+    X_train_raw = training_set.iloc[:, :-1].values
+    y_train_raw = training_set.iloc[:, -1].values
+    
     test_set = pd.read_csv(test_source)
-    X_test_raw = test_set.iloc[:, :]
+    X_test_raw = test_set.iloc[:, :-1].values
+    y_test_raw = test_set.iloc[:, -1].values
+
+    y_train = y_train_raw.reshape(y_train_raw.shape[0], 1)
+    y_test = y_test_raw.reshape(y_test_raw.shape[0], 1)
 
     X_train, X_test = scale_data(X_train_raw, X_test_raw)
 
-    df = pd.DataFrame(X_train, columns = training_set.columns.values)
+    new_training_set = np.hstack((X_train, y_train))
+    new_test_set = np.hstack((X_test, y_test))
+    
+
+    df = pd.DataFrame(new_training_set, columns = training_set.columns.values)
     df.to_csv(training_dir, index = False)
-    df = pd.DataFrame(X_test, columns = test_set.columns.values)
+    df = pd.DataFrame(new_test_set, columns = test_set.columns.values)
     df.to_csv(test_dir, index = False)
 
 def main():
