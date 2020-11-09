@@ -7,18 +7,23 @@ from tools import get_categorical_indexes
 from tools import split_set
 from tools import scale_data
 
-""" CHECKLIST:
+"""
+    CHECKLIST:
 - Reduce set: CHECK
 - Impute missing data: CHECK
 - Encode categorical data: CHECK
 - Split data set: CHECK
 - Normalize data set: CHECK
+
+    TODO:
+- Sjekke hvordan den håndterer stooore dataset
+- Dobbeltsjekke 
 """
 
 def reduce_data_set(source, target):
     print("Creating reduced set from "+source+", and storing in "+target+"....")
 
-    rows = np.r_[:20]
+    rows = np.r_[:200]
     columns = np.r_[:15, -4:0]
     reduced, names = create_reduced_set(rows, columns, source)
 
@@ -72,19 +77,19 @@ def standarize_data_set(training_source, test_source, training_dir, test_dir):
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    #reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
+    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv")
 
     #%% Imputing the missing data '?' ###
-    #impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
+    impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
 
     #%% Encode categorical data from an imputed csv ###
-    #encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
+    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
 
     #%% Split dataset into training and test set ###
-    #split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
+    split_data_set("datasets/encoded.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
 
     #%% Performe feature scaling on training set and test set ###
-    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/training_set.csv", "datasets/test_set.csv")
+    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/beta_training_set.csv", "datasets/beta_test_set.csv")
 
 if __name__ == "__main__":
     main()
