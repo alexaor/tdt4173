@@ -45,12 +45,12 @@ svc.max_iter = -1                       # int, Hard limit on iterations within s
 
 ## Hyperparameters used in the DNN
 # Parameters to the model creation
-DNN.input_shape = (64,)                         # (N,D), Shape of the input to the model
+DNN.input_shape = (6702, 250)                   # (N,D), Shape of the input to the model
 DNN.dropout = 0.1                               # float, rate of how many input units which is set to 0
 # Parameters to the fitting
 DNN.epochs = 5                                  # Number of training epochs
 DNN.batch_size = None                           # int, Number of samples per gradient update
-DNN.steps_per_epoch = None                      # int, Total number of steps before one epoch is finished and starting the next epoch.
+DNN.steps_per_epoch = 500                       # int, Total number of steps before one epoch is finished and starting the next epoch.
 DNN.validation_steps = None                     # int, Total number of steps before stopping when performing validation at the end of every epoch.
 # Parameters to the compilation
 DNN.optimizer_cls = @tf.train.AdamOptimizer()   # the optimization function
