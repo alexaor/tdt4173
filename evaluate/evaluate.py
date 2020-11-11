@@ -13,7 +13,6 @@ filename is given it will save the evaluation in the file, regardless it will pr
 """
 def sklearn_print_evaluation(y_true, methods, filename=""):
     output = ""
-    print(methods['DNN'])
     for key in methods.keys():
         tn, fp, fn, tp = metrics.confusion_matrix(y_true, methods[key]).ravel()
         output += f'------ {key} ------\n'

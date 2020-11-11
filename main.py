@@ -14,8 +14,8 @@ if __name__ == "__main__":
     gin.parse_config_file('configs/hyperparameters.gin')
     print("started main")
 
-    x_train, y_train = utils.get_dataset('beta_training_set.csv')
-    x_test, y_test = utils.get_dataset('beta_test_set.csv')
+    x_train, y_train = utils.get_dataset('normalized_training_set.csv')
+    x_test, y_test = utils.get_dataset('normalized_test_set.csv')
     """
     model = dnn.DNN()
     model.fit_model(x_train, y_train)
