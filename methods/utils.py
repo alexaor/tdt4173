@@ -107,7 +107,7 @@ def plot_tf_model(model, modelname):
         exit(1)
     if modelname.endswith('.png'):
         plot_path = os.path.join(training_plot_dir, modelname)
-        tf.keras.utils.plot_model(model, modelname, show_shapes=True)
+        tf.keras.utils.plot_model(model, plot_path, show_shapes=True)
         return plot_path
     else:
         print(Fore.YELLOW + f'Warning: File extension wrong: ".{modelname.split(".")[-1]}" \t--> should be ".png"')
