@@ -9,34 +9,6 @@ from sklearn.feature_selection import SelectKBest
 
 
 """
-:param rows: list of row slices in reduced set
-:param columns: list of column slices in reduced set
-
-:return (X, column_values): 
-    X:              np.array(rows*columns) reduced data set
-    column_labels:  list of column labels
-"""
-def create_reduced_set(rows, columns, source):
-    dataset = pd.read_csv(source, dtype = "str")
-    X = dataset.iloc[rows, columns].values
-
-    column_labels = dataset.columns.values[columns]
-
-    return X, column_labels
-
-
-"""
-@param X: Array of variables to encode
-@param index_list: List of column indexes that should be transformed
-"""
-def impute_data(X):
-    imputer = SimpleImputer(missing_values='?', strategy='most_frequent')
-    imputer.fit(X)
-    X_imputed = imputer.transform(X)
-    return X_imputed    
-
-
-"""
 @param data_row: One dimensional array with eather categorical or non-categorical data
 """
 def get_categorical_indexes(data_row):

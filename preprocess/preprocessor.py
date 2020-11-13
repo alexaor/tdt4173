@@ -2,91 +2,38 @@ import numpy as np
 import pandas as pd
 import pathlib
 import os
-from tools import create_reduced_set
-from tools import impute_data
+
 from tools import encode_data
-from tools import get_categorical_indexes
 from tools import split_set
 from tools import scale_data
 from tools import feature_select
-from sklearn.model_selection import KFold
-"""
-    CHECKLIST:
-- Reduce set: CHECK
-- Impute missing data: CHECK
-- Encode categorical data: CHECK
-- Split data set: CHECK
-- Normalize data set: CHECK
 
-    TODO:
-- Sjekke hvordan den håndterer stooore dataset
-- Dobbeltsjekke 
-"""
+
+## Impute and encode ##
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectKBest
 
 
 
-"""
-:param source:  filename of csv to be reduced
-:param target:  filename of new csv to be made
-:param rows:    row indexes to be included in reduced data set
-:param columns: column indexes to be included in reduced data set
+def reduce_impute_encode(df, rows, columns):
+    ## Import and reduce dataset ##
+    Z = df.iloc[rows, columns].values
+    column_labels = df.columns.values[columns]
 
-:return void
-
-Reduce csv from source to target. Keep only rows and columns specified by 
-    arguments given in function call.
-
-"""
-def reduce_data_set(source, target, rows, columns):
-    print("Creating reduced set from "+source+", and storing in "+target+"....")
-    reduced, column_names = create_reduced_set(rows, columns, source)
-
-    df = pd.DataFrame(reduced, columns = column_names)
-    df.to_csv(target, index = False)
-
-def reduce_and_impute(source, target, rows, columns):
-    print("Creating reduced set from "+source+", and storing in "+target+"....")
-    reduced, column_names = create_reduced_set(rows, columns, source)
-
-    imputed = impute_data(reduced)
+    ## Impute dataset ##
+    imputer = SimpleImputer(missing_values='?', strategy='most_frequent')
+    imputer.fit(Z)
+    Z_imputed = imputer.transform(Z)
+    df = pd.DataFrame(Z_imputed, columns = column_labels)
     
-    df = pd.DataFrame(imputed, columns = column_names)
-    df.to_csv(target, index = False)
-
-"""
-:param source:  filename of dataset to be imputed
-:param target:  filename of new csv to be made
-
-:return void
-
-Fill inn missing values from source and write new data set to target.
-"""
-def impute_data_set(source, target):
-    print("Imputing data from "+source+" to "+target+"....")
-
-    dataset = pd.read_csv(source, dtype = "str")
-    X = dataset.iloc[:, :].values
-    imputed = impute_data(X)
-    
-    df = pd.DataFrame(imputed, columns = dataset.columns.values)
-    df.to_csv(target, index = False)
-
-"""
-:param source:  filename of dataset to be encoded
-:param target:  filename of new csv to be made
-
-:return void
-
-Encode categorical data from source by means of one hot encoding. Write result
-    to target.
-"""
-def encode_data_set(source, target):
-    print("encoding data from "+source+" to "+target+"....")
-    
-    dataset = pd.read_csv(source)
-    df = encode_data(dataset)
-    df.to_csv(target, index = False)
-
+    ## Encoding data ##    
+    df = encode_data(df)
+    return df
 
 """
 :param source:  filename of dataset to be reduced
@@ -173,10 +120,16 @@ def standarize_data_set(train_source, test_source, train_target, test_target):
     df.to_csv(test_target, index = False)
 
 
-def create_specified_data_set(filename, n_features = -1, columns = np.r_[:119, -1], rows = np.r_[:8378], test_size = 0.2, standarize = True):
-    #reduce_data_set("misc_sets/speeddating.csv", "misc_sets/reduced.csv", rows, columns)
-    reduce_and_impute("misc_sets/speeddating.csv", "misc_sets/imputed.csv", rows, columns)
-    encode_data_set("misc_sets/imputed.csv", "misc_sets/encoded.csv")
+    
+
+#### Please give stuff proper names at some point ####
+def create_data_set(filename, n_features = -1, columns = np.r_[:119, -1], rows = np.r_[:8378], test_size = 0.2, standarize = True):
+    origin = pathlib.Path('misc_sets/speeddating.csv')
+    dataset = pd.read_csv(origin, dtype = "str")
+    encoded = reduce_impute_encode(dataset, rows, columns)
+    encoded = encoded.astype(np.float)
+
+    
     if n_features != -1:
         feature_selection("misc_sets/encoded.csv", "misc_sets/feature_reduced_set.csv", n_features)
         if standarize:
@@ -212,7 +165,7 @@ def main():
 
     # #%% Performe feature scaling on training set and test set ###
     # standarize_data_set("misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", "misc_sets/normalized_training_set.csv", "misc_sets/normalized_test_set.csv")
-    create_specified_data_set("oskartest", rows = np.r_[:200], standarize=False, n_features = 10)
+    create_data_set("oskartest", n_features = 10)
 
 if __name__ == "__main__":
     main()
