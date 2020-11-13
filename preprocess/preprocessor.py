@@ -112,12 +112,12 @@ def feature_selection(source, target, n):
 Split dataset from source into training and test data. Write result to
     train_target and test_target respectively
 """
-def split_data_set(source, train_target, test_target):
+def split_data_set(source, train_target, test_target, test_size):
     print("Splitting data set from "+source+" to "+train_target+" and "+test_target)
 
     dataset = pd.read_csv(source)
     X = dataset.iloc[:, :].values
-    X_train, X_test = split_set(X, seed = 69) 
+    X_train, X_test = split_set(X, size = test_size, seed = 69) 
 
     df = pd.DataFrame(X_train, columns = dataset.columns.values)
     df.to_csv(train_target, index = False)
@@ -165,27 +165,46 @@ def standarize_data_set(train_source, test_source, train_target, test_target):
     df.to_csv(test_target, index = False)
 
 
+def create_specified_data_set(filename, n_features = -1, columns = np.r_[:119, -1], rows = np.r_[:8378], test_size = 0.2, standarize = True):
+    reduce_data_set("misc_sets/speeddating.csv", "misc_sets/reduced.csv", rows, columns)
+    impute_data_set("misc_sets/reduced.csv", "misc_sets/imputed.csv")
+    encode_data_set("misc_sets/imputed.csv", "misc_sets/encoded.csv")
+    if n_features != -1:
+        feature_selection("misc_sets/encoded.csv", "misc_sets/feature_reduced_set.csv", n_features)
+        if standarize:
+            split_data_set("misc_sets/feature_reduced_set.csv", "misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", test_size)
+            standarize_data_set("misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", "datasets/"+filename+"_train.csv", "datasets/"+filename+"_test.csv")
+        else:
+            split_data_set("misc_sets/feature_reduced_set.csv", "datasets/"+filename+"_train.csv", "datasets/"+filename+"_test.csv", test_size)
+        
+    elif standarize:
+        split_data_set("misc_sets/encoded.csv", "misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", test_size)
+        standarize_data_set("misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", "datasets/"+filename+"_train.csv", "datasets/"+filename+"_test.csv")
+    else:
+        split_data_set("misc_sets/encoded.csv", "datasets/"+filename+"_train.csv", "datasets/"+filename+"_test.csv", test_size)
+
+
 def main():
-    #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
-    rows = np.r_[:200]  #Max row is 8378
-    columns = np.r_[:21, -1]  #Max col is 123
-    reduce_data_set("datasets/speeddating.csv", "datasets/reduced.csv", rows, columns)
+    # #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
+    # rows = np.r_[:200]  #Max row is 8378
+    # columns = np.r_[:21, -1]  #Max col is 123
+    # reduce_data_set("misc_sets/speeddating.csv", "misc_sets/reduced.csv", rows, columns)
 
-    #%% Imputing the missing data '?' ###
-    impute_data_set("datasets/reduced.csv", "datasets/imputed.csv")
+    # #%% Imputing the missing data '?' ###
+    # impute_data_set("misc_sets/reduced.csv", "misc_sets/imputed.csv")
 
-    #%% Encode categorical data from an imputed csv ###
-    encode_data_set("datasets/imputed.csv", "datasets/encoded.csv")
+    # #%% Encode categorical data from an imputed csv ###
+    # encode_data_set("misc_sets/imputed.csv", "misc_sets/encoded.csv")
 
-    #%% Performe feature selection to reduce data set size and reduce overfitting ###
-    feature_selection("datasets/encoded.csv", "datasets/feature_reduced_set.csv", 20)
+    # #%% Performe feature selection to reduce data set size and reduce overfitting ###
+    # feature_selection("misc_sets/encoded.csv", "misc_sets/feature_reduced_set.csv", 20)
     
-    #%% Split dataset into training and test set ###
-    split_data_set("datasets/feature_reduced_set.csv", "datasets/raw_training_set.csv", "datasets/raw_test_set.csv")
+    # #%% Split dataset into training and test set ###
+    # split_data_set("misc_sets/feature_reduced_set.csv", "misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", 0.2)
 
-    #%% Performe feature scaling on training set and test set ###
-    standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv")
-
+    # #%% Performe feature scaling on training set and test set ###
+    # standarize_data_set("misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", "misc_sets/normalized_training_set.csv", "misc_sets/normalized_test_set.csv")
+    create_specified_data_set("oskartest", rows = np.r_[:200])
 
 if __name__ == "__main__":
     main()
