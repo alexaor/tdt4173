@@ -43,7 +43,15 @@ def reduce_data_set(source, target, rows, columns):
 
     df = pd.DataFrame(reduced, columns = column_names)
     df.to_csv(target, index = False)
+
+def reduce_and_impute(source, target, rows, columns):
+    print("Creating reduced set from "+source+", and storing in "+target+"....")
+    reduced, column_names = create_reduced_set(rows, columns, source)
+
+    imputed = impute_data(reduced)
     
+    df = pd.DataFrame(imputed, columns = column_names)
+    df.to_csv(target, index = False)
 
 """
 :param source:  filename of dataset to be imputed
@@ -166,8 +174,8 @@ def standarize_data_set(train_source, test_source, train_target, test_target):
 
 
 def create_specified_data_set(filename, n_features = -1, columns = np.r_[:119, -1], rows = np.r_[:8378], test_size = 0.2, standarize = True):
-    reduce_data_set("misc_sets/speeddating.csv", "misc_sets/reduced.csv", rows, columns)
-    impute_data_set("misc_sets/reduced.csv", "misc_sets/imputed.csv")
+    #reduce_data_set("misc_sets/speeddating.csv", "misc_sets/reduced.csv", rows, columns)
+    reduce_and_impute("misc_sets/speeddating.csv", "misc_sets/imputed.csv", rows, columns)
     encode_data_set("misc_sets/imputed.csv", "misc_sets/encoded.csv")
     if n_features != -1:
         feature_selection("misc_sets/encoded.csv", "misc_sets/feature_reduced_set.csv", n_features)
@@ -204,7 +212,7 @@ def main():
 
     # #%% Performe feature scaling on training set and test set ###
     # standarize_data_set("misc_sets/raw_training_set.csv", "misc_sets/raw_test_set.csv", "misc_sets/normalized_training_set.csv", "misc_sets/normalized_test_set.csv")
-    create_specified_data_set("oskartest", rows = np.r_[:200])
+    create_specified_data_set("oskartest", rows = np.r_[:200], standarize=False, n_features = 10)
 
 if __name__ == "__main__":
     main()

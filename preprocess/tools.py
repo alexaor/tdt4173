@@ -17,7 +17,7 @@ from sklearn.feature_selection import SelectKBest
     column_labels:  list of column labels
 """
 def create_reduced_set(rows, columns, source):
-    dataset = pd.read_csv(source)
+    dataset = pd.read_csv(source, dtype = "str")
     X = dataset.iloc[rows, columns].values
 
     column_labels = dataset.columns.values[columns]
