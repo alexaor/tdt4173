@@ -8,32 +8,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import SelectKBest
 
 
-"""
-:param rows: list of row slices in reduced set
-:param columns: list of column slices in reduced set
+def reduce_impute_encode(df, rows, columns):
+    ## Import and reduce dataset ##
+    Z = df.iloc[rows, columns].values
+    column_labels = df.columns.values[columns]
 
-:return (X, column_values): 
-    X:              np.array(rows*columns) reduced data set
-    column_labels:  list of column labels
-"""
-def create_reduced_set(rows, columns, source):
-    dataset = pd.read_csv(source)
-    X = dataset.iloc[rows, columns].values
-
-    column_labels = dataset.columns.values[columns]
-
-    return X, column_labels
-
-
-"""
-@param X: Array of variables to encode
-@param index_list: List of column indexes that should be transformed
-"""
-def impute_data(X):
+    ## Impute dataset ##
     imputer = SimpleImputer(missing_values='?', strategy='most_frequent')
-    imputer.fit(X)
-    X_imputed = imputer.transform(X)
-    return X_imputed    
+    imputer.fit(Z)
+    Z_imputed = imputer.transform(Z)
+    df = pd.DataFrame(Z_imputed, columns = column_labels)
+    
+    ## Encoding data ##    
+    df = encode_data(df)
+    return df.astype(np.float)
 
 
 """
@@ -95,27 +83,44 @@ def split_set(X, size = 0.2, seed = None):
 @param X_train: Array of training data
 @param X_test: Array of test data
 """
-def scale_data(X_train_raw, X_test_raw):
+def feature_scale(Z_train, Z_test):
+    X_train = Z_train.iloc[:, :-1].values
+    y_train = Z_train.iloc[:, -1].values
+    X_test = Z_test.iloc[:, :-1].values
+    y_test = Z_test.iloc[:, -1].values
+    
+    y_train = y_train.reshape(y_train.shape[0], 1)
+    y_test = y_test.reshape(y_test.shape[0], 1)
+    
     sc = StandardScaler()
-    X_train = sc.fit_transform(X_train_raw)
-    X_test = sc.transform(X_test_raw)
-    return X_train, X_test
+    X_train_scaled = sc.fit_transform(X_train)
+    X_test_scaled = sc.transform(X_test)
+
+    cols = Z_train.columns.values
+    df_train = pd.DataFrame(np.hstack((X_train_scaled, y_train)), columns = cols)
+    df_test = pd.DataFrame(np.hstack((X_test_scaled, y_test)), columns = cols)
+    
+    return df_train, df_test
 
 
 
-def feature_select(Z, n):
+def feature_selection(Z, n_features):
     X = Z.iloc[:, :-1].values
     Y = Z.iloc[:, -1].values
 
-    feature_selector = SelectKBest(k = n)
+    feature_selector = SelectKBest(k = n_features)
     feature_selector.fit(X, Y)
     
     column_selections = feature_selector.get_support()
     selected_cols = [col for col in range(len(column_selections)) if column_selections[col]]
     
+    labels = Z.columns.values[np.r_[selected_cols, -1]]
+    
     X = feature_selector.transform(X)
     Y = Y.reshape(Y.shape[0], 1)
     X_new = np.hstack((X, Y))
+    
+    df = pd.DataFrame(X_new, columns=labels)
 
-    return X_new, selected_cols
+    return df
     
