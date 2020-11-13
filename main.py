@@ -4,19 +4,18 @@ import gin
 import methods.utils as utils
 
 
-# TODO make the rest as classes
 def get_models(input_shape, keys):
     models = {}
     if 'Random Forest' in keys:
-        models['Random Forest'] = methods.random_forest.RandomForest()
+        models['Random Forest'] = methods.models.random_forest()
     if 'Ada Boost' in keys:
-        models['Ada Boost'] = methods.ada_boost.AdaBoost()
+        models['Ada Boost'] = methods.models.ada_boost()
     if 'Decision Tree' in keys:
-        models['Decision Tree'] = methods.decision_tree.DecisionTree()
+        models['Decision Tree'] = methods.models.decision_tree()
     if 'SVC' in keys:
-        models['SVC'] = methods.svc.SVC()
+        models['SVC'] = methods.models.svc()
     if 'KNN' in keys:
-        models['KNN'] = methods.knn.KNN()
+        models['KNN'] = methods.models.knn()
     if 'DNN' in keys:
         models['DNN'] = methods.dnn.DNN(input_shape=input_shape)
     return models
@@ -38,6 +37,7 @@ def get_all_predictions(models, x_test):
 
 
 def plot_training_curves(models, x_train, y_train, plotname):
+    print('Plotting lerning curves for sklearn methods ...')
     for model in models.keys():
         if model != 'DNN':
             models[model].plot_learning_curves(x_train, y_train, plotname)
@@ -46,7 +46,7 @@ def plot_training_curves(models, x_train, y_train, plotname):
 
 
 def main():
-    keys = ['Ada Boost', 'KNN', 'SVC', 'Decision Tree', 'Random Forest']
+    keys = ['Ada Boost', 'KNN', 'SVC']
     dnn_confusion_matrix = None
     x_train, y_train = utils.get_dataset('normalized_training_set.csv')
     x_test, y_test = utils.get_dataset('normalized_test_set.csv')
@@ -56,9 +56,11 @@ def main():
         models_proba['DNN'], dnn_confusion_matrix = models['DNN'].evaluate(x_test, y_test)
 
     print('\n\n================ Evaluation ================\n')
-    # plot_training_curves(models, x_train, y_train, plotname='test')
+    # models['DNN'].plot_model('test.png')
+    # models['DNN'].plot_accuracy('test.png')
+    plot_training_curves(models, x_train, y_train, plotname='test.png')
     evaluate.print_evaluation(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
-    evaluate.plot_roc_auc(y_test, models_proba)
+    # evaluate.plot_roc_auc(y_test, models_proba)
     # evaluate.plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     # evaluate.plot_comparison(y_test, models_bool, ['accuracy', 'f1', 'Specificity', 'False positive rate'],
     #                         dnn_conf_matrix=dnn_confusion_matrix)

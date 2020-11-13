@@ -1,45 +1,42 @@
 ## Hyperparameters used in our different machine learning models
 
 ## Import the python methods files to access the classes
-import methods.ada_boost
-import methods.decision_tree
-import methods.knn
-import methods.random_forest
-import methods.svc
+import methods.models
 import methods.dnn
 import gin.tf.external_configurables
 
 
 ## AdaBoost Classifier - Hyperparameters
-AdaBoost.learning_rate = 1             # float, shrinks the contribution of each classifier
-AdaBoost.n_estimators = 50             # int, max number of estimators (trees in the forest) at which boosting is terminated
+ada_boost.learning_rate = 1             # float, shrinks the contribution of each classifier
+ada_boost.n_estimators = 50             # int, max number of estimators (trees in the forest) at which boosting is terminated
 
 ## Decision Tree Classifier - Hyperparameters
-DecisionTree.max_depth = None          # int, the maximum depth of the tree, default at None
-DecisionTree.splitter = 'best'         # {'best', 'random'}, strategy on how the node split is chosen
-DecisionTree.max_features = None       # {'None', 'auto', 'sqrt', 'log2'}, the number of features to consider when splitting
+decision_tree.criterion = 'gini'        # {'gini', 'entropy'}, the quality of the split
+decision_tree.max_depth = None          # int, the maximum depth of the tree, default at None
+decision_tree.splitter = 'best'         # {'best', 'random'}, strategy on how the node split is chosen
+decision_tree.max_features = None       # {'None', 'auto', 'sqrt', 'log2'}, the number of features to consider when splitting
 
 ## K-Nearest Neighbors Classifier - Hyperparameters
-KNN.n_neighbors = 5                    # int, number of neighbors used in n neighbors queries
-KNN.weights = 'uniform'                # {‘uniform’, ‘distance’} or callable, what the weight on the neighbors should be
-KNN.p = 2                              # int{1, 2}, 1 = manhatten distance, 2 = euclidean distance
+knn.n_neighbors = 5                    # int, number of neighbors used in n neighbors queries
+knn.weights = 'uniform'                # {‘uniform’, ‘distance’} or callable, what the weight on the neighbors should be
+knn.p = 2                              # int{1, 2}, 1 = manhatten distance, 2 = euclidean distance
 
 ## Random forest Classifier - Hyperparameters
-RandomForest.n_estimators = 10         # int, Number of trees in the forest
-RandomForest.criterion = "gini"        # {“gini”, “entropy”}, function to measure the quality of a split
-RandomForest.max_depth = 3             # int, maximum depth of the tree
-RandomForest.max_features = "auto"     # {“auto”, “sqrt”, “log2”}, max number of features considered for splitting a node
-RandomForest.min_samples_split = 2     # int, min number of data points placed in a node before the node is split
-RandomForest.min_samples_leaf = 1      # int, minimum number of samples required to be at a leaf node
-RandomForest.bootstrap = True          # bool, method for sampling data points (with or without replacement)
+random_forest.n_estimators = 10         # int, Number of trees in the forest
+random_forest.criterion = "gini"        # {“gini”, “entropy”}, function to measure the quality of a split
+random_forest.max_depth = 3             # int, maximum depth of the tree
+random_forest.max_features = "auto"     # {“auto”, “sqrt”, “log2”}, max number of features considered for splitting a node
+random_forest.min_samples_split = 2     # int, min number of data points placed in a node before the node is split
+random_forest.min_samples_leaf = 1      # int, minimum number of samples required to be at a leaf node
+random_forest.bootstrap = True          # bool, method for sampling data points (with or without replacement)
 
 ## Support Vector Classifier - Hyperparameters
-SVC.C = 1.0                            # float, regularization parameter.
-SVC.kernel = 'rbf'                     # {‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’}, specifies the kernel type to be used in the algorithm
+svc.C = 1.0                            # float, regularization parameter.
+svc.kernel = 'rbf'                     # {‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’}, specifies the kernel type to be used in the algorithm
 # if using poly, need to specify svc.poly as well
-SVC.gamma = 'scale'                    # {‘scale’, ‘auto’} or float, kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’
-SVC.tol = 1e-3                         # float, tolerance for stopping
-SVC.max_iter = -1                      # int, Hard limit on iterations within solver (epochs), -1 is no limit
+svc.gamma = 'scale'                    # {‘scale’, ‘auto’} or float, kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’
+svc.tol = 1e-3                         # float, tolerance for stopping
+svc.max_iter = -1                      # int, Hard limit on iterations within solver (epochs), -1 is no limit
 
 
 
