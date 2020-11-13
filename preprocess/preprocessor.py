@@ -163,52 +163,7 @@ def standarize_data_set(train_source, test_source, train_target, test_target):
     df.to_csv(train_target, index = False)
     df = pd.DataFrame(new_test_set, columns = test_set.columns.values)
     df.to_csv(test_target, index = False)
-    
-    
-"""
-:param source:  filename of dataset to create k-fold from
-:param k:       specifies number of splits
 
-:return void
-
-Create k different splits from source and write to K-fold folder
-"""
-def create_k_fold(source, k):
-    target = pathlib.Path("datasets/K-fold/K"+str(k))
-    target.mkdir(exist_ok = True, parents = True)
-    
-    print("Creating "+str(k)+"-fold data split from "+ source+" to "+str(target))
-    
-    dataset = pd.read_csv(source)
-    X = dataset.iloc[:, :].values
-    kf = KFold(n_splits = k, shuffle = True)
-    count = 1
-    for train_index, test_index in kf.split(X):
-        train_target = os.path.join(target,"train"+str(count)+".csv")
-        test_target = os.path.join(target,"test"+str(count)+".csv")
-        count += 1
-
-        X_train = X[train_index, :-1]
-        y_train = X[train_index, -1]
-        X_test = X[test_index, :-1]
-        y_test = X[test_index, -1]
-        
-        y_train = y_train.reshape(y_train.shape[0], 1)
-        y_test = y_test.reshape(y_test.shape[0], 1)
-        
-        X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-        
-        scaled_training_set = np.hstack((X_train_scaled, y_train))
-        scaled_test_set = np.hstack((X_test_scaled, y_test))
-    
-
-        df = pd.DataFrame(scaled_training_set, columns = dataset.columns.values)
-        df.to_csv(train_target, index = False)
-        df = pd.DataFrame(scaled_test_set, columns = dataset.columns.values)
-        df.to_csv(test_target, index = False)
-        
-        
-        print(X_train.shape)
 
 def main():
     #%% Creates a reduced csv file with rows and columns specified in create_reduced_csv() ###
@@ -230,9 +185,6 @@ def main():
 
     #%% Performe feature scaling on training set and test set ###
     standarize_data_set("datasets/raw_training_set.csv", "datasets/raw_test_set.csv", "datasets/normalized_training_set.csv", "datasets/normalized_test_set.csv")
-
-    #%% Create K-fold set
-    create_k_fold("datasets/encoded.csv", 7)
 
 
 if __name__ == "__main__":
