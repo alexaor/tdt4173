@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 import tensorflow as tf
 
-model_output_dir = pathlib.Path(os.path.join('methods','saved_models'))
+model_output_dir = pathlib.Path(os.path.join('methods', 'saved_models'))
 model_output_dir.mkdir(exist_ok=True, parents=True)
 
 dataset_path = pathlib.Path('preprocess/datasets')

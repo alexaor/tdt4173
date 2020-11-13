@@ -5,17 +5,6 @@ import methods.utils as utils
 import matplotlib.pyplot as plt
 
 
-
-"""
-:param
-
-:return
-
-
-Creates a deep neural network classifier
-"""
-
-
 @gin.configurable(blacklist=['modelname'])
 class DNN:
     def __init__(self, input_shape, dropout, optimizer_cls, metrics, loss, modelname="", **kwargs):
@@ -44,14 +33,15 @@ class DNN:
     def save_model(self, modelname):
         utils.save_tf_model(modelname, self.model)
 
-    def plot_accuracy(self):
+    def plot_accuracy(self, filename):
         plt.plot(self.epoch_history.history['accuracy'])
         plt.plot(self.epoch_history.history['loss'])
         plt.plot(self.epoch_history.history['mse'])
         plt.title('Training evaluation')
         plt.xlabel('epoch')
         plt.legend(['Accuracy', 'Loss', 'mse'], loc='best')
-        plt.show()
+        plotpath = utils.save_training_plot(plt, f'dnn_{filename}')
+        print(f'\t DNN -> Saved training plot in directory: "{plotpath}"')
 
     def evaluate(self, x_test, y_true, threshold=0.5):
         y_pred = self.model.predict(x_test, verbose=1)
