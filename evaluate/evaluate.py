@@ -1,21 +1,28 @@
 from sklearn import metrics
 import matplotlib.pyplot as plt
+import numpy as np
+import evaluate.utils as utils
 
 
 """
-:param y_true:      1d binary array, the true output values
-:param methods:     dictionary[str, 1d binary array], the predicted output values for a method
-:param filename:    string, name of file to save the evaluation, if empty nothing will be saved
+:param y_true:              1d binary array, the true output values
+:param methods:             dict[str, 1d binary array], the predicted output values for a method
+:param filename:            string, name of file to save the evaluation, if empty nothing will be saved
+:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
 
 The functions iterate through all methods in the dictionary and for each finds the confusion matrix and calculate the 
 accuracy, misclassification, precision, recall, specificity, false positive rate, false negative rate and f1. If the 
 filename is given it will save the evaluation in the file, regardless it will print the evaluation to terminal.
 """
-def sklearn_print_evaluation(y_true, methods, filename=""):
+def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
     output = ""
-    print(methods['DNN'])
+    if dnn_conf_matrix is not None:
+        methods['DNN'] = dnn_conf_matrix
     for key in methods.keys():
-        tn, fp, fn, tp = metrics.confusion_matrix(y_true, methods[key]).ravel()
+        if key == 'DNN':
+            tn = dnn_conf_matrix[0]; fp = dnn_conf_matrix[1]; fn = dnn_conf_matrix[2]; tp = dnn_conf_matrix[3]
+        else:
+            tn, fp, fn, tp = metrics.confusion_matrix(y_true, methods[key]).ravel()
         output += f'------ {key} ------\n'
         output += '\tConfusion matrix:\n'
         output += '\t\t\t\t| Pred NO\t\t| Pred YES\n'
@@ -33,25 +40,183 @@ def sklearn_print_evaluation(y_true, methods, filename=""):
         output += f'\tF1: \t\t\t\t\t{round(f1(tp, fp, fn), 3)}\n'
         output += '\n\n'
     if len(filename) > 0:
-        f = open(filename, "w")
-        f.write(output)
-        f.close()
+        file_path = utils.save_text(filename, output)
+        print(f"Saved all evaluations in the file: '{file_path}'")
+
     print(output)
 
 
-def sklearn_auc(y_true, methods):
+"""
+:param y_true:              1d binary array, the true output values
+:param methods:             dict[str, 1d binary array], the predicted output values for a method
+:param filename:            string, name of file to save the evaluation, if empty plot will only be shown not saved
+
+Creates a ROC curve with the given inputs, and calculate the AUC for each methods. If no filename is given the plot
+will not be saved, only shown.
+"""
+def plot_roc_auc(y_true, methods, filename=""):
+    auc = []
+    fig, ax = plt.subplots()
     for key in methods.keys():
-        auc = metrics.roc_auc_score(y_true, methods[key])
         fpr, tpr, thresholds = metrics.roc_curve(y_true, methods[key])
-        plt.plot(fpr, tpr, marker='.')
-    plt.plot([0, 1], [0, 1], linestyle='--')  # plt no skill
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate')
-    labels = list(methods.keys())
+        auc.append(metrics.auc(fpr, tpr))
+        ax.plot(fpr, tpr)
+    ax.plot([0, 1], [0, 1], linestyle='--')  # plt no skill
+    ax.set_xlabel('False positive rate')
+    ax.set_ylabel('True positive rate')
+    labels = [f'{list(methods.keys())[i]}, AUC: {round(auc[i], 2)}' for i in range(len(auc))]
     labels.append('No skill')
-    plt.legend(labels)
-    plt.title(f'{key}: AUC = {round(auc * 100, 2)}')
-    plt.show()
+    fig.legend(labels, loc=7, bbox_to_anchor=(0.9, 0.3))
+    ax.set_title('ROC curve')
+    ax.grid(True)
+    if len(filename) > 0:
+        file_path = utils.save_plot(fig, filename)
+        print(f"Saved ROC plot in directory: '{file_path}'")
+    else:
+        plt.show()
+
+
+"""
+:param y_true:              1d binary array, the true output values
+:param methods:             dictionary[str, 1d binary array], the predicted output values for a method
+:param dirname:             str, name of the directory the plots will be saved in, if empty plots will only be shown
+:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+
+Makes a separate plot for each evaluation method, where all the methods in the dictionary 'methods' are being
+compared to one another. The plots are either saved in the directory with given name, or just shown to the user.
+"""
+def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None):
+    if len(dirname) > 0:
+        utils.make_plot_dir(dirname)
+    evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
+    width = 0.35
+
+    # Plotting
+    for key in evaluations.keys():
+        labels = list(evaluations[key].keys())
+        labels_loc = np.arange(len(labels))
+        values = [value * 100 for value in evaluations[key].values()]
+        fig, ax = plt.subplots()
+        reacts = ax.bar(labels_loc + width, values, width)
+        ax.set_title(key)
+        ax.set_yticks([y*10 for y in range(1, 11)])
+        ax.set_yticklabels([f'{y*10} %' for y in range(1, 11)])
+        ax.set_xticks(labels_loc+width)
+        ax.set_xticklabels(labels)
+        ax.set_ylim(0, 105)
+
+        # Add the values on top of the bars
+        for react in reacts:
+            height = react.get_height()
+            ax.annotate(round(height, 2),
+                         xy=(react.get_x() + width/2, height),
+                         xytext=(0, 3),
+                         textcoords="offset points",
+                         ha='center', va='bottom')
+
+        # Save or show the plots
+        if len(dirname) > 0:
+            plot_dir = utils.save_plot(fig, f'{key}.png', dirname)
+            print(f"Saved all evaluations plot in directory: '{plot_dir}'")
+        else:
+            fig.show()
+
+
+"""
+:param y_true:              1d binary array, the true output values
+:param methods:             dictionary[str, 1d binary array], the predicted output values for a method
+:param evallist:            list[str], list of evaluations method that the methods shall be compared against each other
+:param filename:            str, name of the file the plot will be saved as, if empty the plot will not be saved only shown
+:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+
+Compares the methods in the methods dictionary with the wanted evaluations method. Either saves the plot, or shows it 
+to the user. 
+"""
+def plot_comparison(y_true, methods, evallist, filename="", dnn_conf_matrix=None):
+    evallist = [evaluation.lower() for evaluation in evallist]
+    all_evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
+    evaluations = {}
+    width = 0.55
+
+    # make a new dictionary which has method as keys and its values are dictionaries with evaluation method as keys
+    for method in methods:
+        evaluations[method] = {}
+        for evaluation in list(all_evaluations.keys()):
+            if evaluation.lower() in evallist:
+                evaluations[method][evaluation] = all_evaluations[evaluation][method]
+
+    # Plotting
+    labels_loc = np.arange(len(evallist))
+    numb_methods = len(methods.keys())
+    fig, ax = plt.subplots()
+    fig.set_figheight(2*numb_methods)
+    fig.set_figwidth(3*numb_methods + len(evallist))
+    i = 0
+    for method in evaluations.keys():
+        values = [value * 100 for value in evaluations[method].values()]
+        reacts = ax.bar(labels_loc + i*width/numb_methods, values, width/numb_methods, label=method)
+        labels = list(evaluations[method].keys())
+        for react in reacts:
+            height = react.get_height()
+            ax.annotate(round(height, 2),
+                         xy=(react.get_x() + react.get_width()/2, height),
+                         xytext=(0, 3),
+                         textcoords="offset points",
+                         ha='center', va='bottom')
+        i += 1
+    ax.set_title('Comparison of  methods')
+    ax.set_yticks([y * 10 for y in range(1, 11)])
+    ax.set_yticklabels([f'{y * 10} %' for y in range(1, 11)])
+    ax.set_xticks(labels_loc + width/numb_methods)
+    ax.set_xticklabels(labels)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    fig.tight_layout()
+    ax.set_ylim(0, 110)
+
+    # Save or show plots
+    if len(filename) > 0:
+        plot_dir = utils.save_plot(fig, filename)
+        print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
+    else:
+        fig.show()
+
+
+"""
+:param y_true:              1d binary array, the true output values
+:param methods:             dict[str, 1d binary array], the predicted output values for a method
+:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+
+:return evaluation:     dict[str, dict[str, float]], the results for the different evaluations methods
+
+Creates a new dictionary where the evaluations method is the key, the value for the keys are a new dictionary, where 
+the keys are the method and the values are the result for the given evaluation method. This dictionary is returned.
+"""
+def get_all_evaluations(y_true, methods, dnn_conf_matrix):
+    if dnn_conf_matrix is not None:
+        methods['DNN'] = dnn_conf_matrix
+    evaluation = {'Accuracy': {},
+                  'Misclassification': {},
+                  'Precision': {},
+                  'Recall': {},
+                  'Specificity': {},
+                  'False positive rate': {},
+                  'False negative rate': {},
+                  'F1': {}}
+    for key in methods.keys():
+        if key == 'DNN':
+            tn = dnn_conf_matrix[0]; fp = dnn_conf_matrix[1]; fn = dnn_conf_matrix[2]; tp = dnn_conf_matrix[3]
+        else:
+            tn, fp, fn, tp = metrics.confusion_matrix(y_true, methods[key]).ravel()
+        evaluation['Accuracy'][key] = accuracy(tp, tn, tn + fp + fn + tp)
+        evaluation['Misclassification'][key] = misclassification(tp, tn, tn + fp + fn + tp)
+        evaluation['Precision'][key] = precision(tp, fp)
+        evaluation['Recall'][key] = recall(tp, fn)
+        evaluation['Specificity'][key] = specificity(tn, fp)
+        evaluation['False negative rate'][key] = false_negative_rate(fn, tp)
+        evaluation['False positive rate'][key] = false_positive_rate(fp, tn)
+        evaluation['F1'][key] = f1(tp, fp, fn)
+    return evaluation
+
 
 
 """
