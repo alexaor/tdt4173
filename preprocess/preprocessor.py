@@ -9,7 +9,7 @@ from preprocess.tools import feature_scale
 from preprocess.tools import reduce_impute_encode
 
 
-def create_data_set(filename, n_features=-1, columns=np.r_[:107, -1], rows=np.r_[:8378], test_size=0.2, standarize=True):
+def create_data_set(filename, n_features=-1, columns=np.r_[2:6,7:12,14:21,39:45,51:56,73:90,107,-1], rows=np.r_[:8378], test_size=0.2, standarize=True):
     ### Defining dataset paths
     origin = pathlib.Path('preprocess/speeddating.csv')
     train_path = pathlib.Path('preprocess/datasets/'+filename+"_train.csv")
