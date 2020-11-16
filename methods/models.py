@@ -1,8 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn import svm
-from methods.classifier import Classifier, SVC
+from methods.classifier import Classifier
 import gin
 
 
@@ -64,8 +63,3 @@ def ada_boost(**kwargs) -> Classifier:
 @gin.configurable
 def knn(**kwargs):
     return Classifier(KNeighborsClassifier(**kwargs), 'KNN')
-
-
-@gin.configurable
-def svc(**kwargs):
-    return SVC(svm.SVC(**kwargs))
