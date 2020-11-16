@@ -84,10 +84,9 @@ class Classifier:
                 self._kwargs.pop('criterion')
                 self._kwargs['criterion'] = criterion
                 models.append(self._classifier(**self._kwargs))
-            plot = utils.plot_learning_sklearn(models, self._name, criterions, x_train, y_train, cv=cv)
+            plot = utils.plot_learning_sklearn(models, self._name, x_train, y_train, criterion=criterions, cv=cv)
         else:
-            plot = utils.plot_learning_sklearn([self._classifier(**self._kwargs)], self._name, [self._criterion],
-                                               x_train, y_train, cv=cv)
+            plot = utils.plot_learning_sklearn([self._classifier(**self._kwargs)], self._name, x_train, y_train, cv=cv)
         plot_path = utils.save_training_plot(plot, f'{self._short_name}_{plot_name}')
         print(f'{self._name} -> Saved training plot in directory: "{plot_path}"')
 
