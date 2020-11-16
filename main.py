@@ -39,6 +39,8 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
     print('Plotting learning curves for the methods ...')
     for model in models.keys():
         if model != 'DNN':
+            models[model].plot_learning_curves(x_train, y_train, plotname, False)
+        elif model == 'Decision Tree':
             models[model].plot_learning_curves(x_train, y_train, plotname, compare_criterion)
         else:
             models[model].plot_accuracy()
@@ -46,7 +48,7 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
 
 def main():
     create_data_set('test')
-    keys = ['Random Forest']
+    keys = ['Ada Boost']
     dnn_confusion_matrix = None
     x_train, y_train = utils.get_dataset('test_train.csv')
     x_test, y_test = utils.get_dataset('test_test.csv')

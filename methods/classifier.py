@@ -1,6 +1,7 @@
 import time
 import methods.utils as utils
 from sklearn.model_selection import ShuffleSplit
+from sklearn.tree import DecisionTreeClassifier
 
 
 class Classifier:
@@ -66,10 +67,13 @@ class Classifier:
             as training input samples
 
         y_train : array
-            An array of output sample values used during trianing
+            An array of output sample values used during training
 
         plot_name : str
             Name of the plot, required to have the file extension `.png`
+
+        compare_criterion :  bool
+            If the learning curve should compare the two different criterion or not
         """
 
         cv = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0)  # TODO need to change this
