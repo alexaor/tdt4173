@@ -1,4 +1,5 @@
 # TDT4173 - Machine Learning Project
+[![Documentation Status](https://readthedocs.org/projects/tdt4173/badge/?version=latest)](https://tdt4173.readthedocs.io/en/latest/?badge=latest)
 
 ## TODOs
 * Write comments
