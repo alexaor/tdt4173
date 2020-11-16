@@ -35,18 +35,18 @@ def get_all_predictions(models, x_test):
     return models_proba, models_bool
 
 
-def plot_training_curves(models, x_train, y_train, plotname):
-    print('Plotting lerning curves for sklearn methods ...')
+def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=False):
+    print('Plotting learning curves for the methods ...')
     for model in models.keys():
         if model != 'DNN':
-            models[model].plot_learning_curves(x_train, y_train, plotname)
+            models[model].plot_learning_curves(x_train, y_train, plotname, compare_criterion)
         else:
             models[model].plot_accuracy()
 
 
 def main():
     create_data_set('test')
-    keys = ['Ada Boost', 'KNN']
+    keys = ['Random Forest']
     dnn_confusion_matrix = None
     x_train, y_train = utils.get_dataset('test_train.csv')
     x_test, y_test = utils.get_dataset('test_test.csv')
@@ -58,9 +58,9 @@ def main():
     print('\n\n================ Evaluation ================\n')
     # models['DNN'].plot_model('test.png')
     # models['DNN'].plot_accuracy('test.png')
-    # plot_training_curves(models, x_train, y_train, plotname='test.png')
+    plot_training_curves(models, x_train, y_train, 'test2.png', True)
     evaluate.print_evaluation(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
-    # evaluate.plot_roc_auc(y_test, models_proba)
+    evaluate.plot_roc_auc(y_test, models_proba)
     # evaluate.plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     # evaluate.plot_comparison(y_test, models_bool, ['accuracy', 'f1', 'Specificity', 'False positive rate'],
     #                         dnn_conf_matrix=dnn_confusion_matrix)

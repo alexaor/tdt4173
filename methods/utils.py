@@ -121,16 +121,17 @@ def plot_tf_model(model, modelname):
         return '-1'
 
 
-def plot_learning_sklearn(estimator, modelname, specification, x, y, ylim=None, cv=5,
+def plot_learning_sklearn(estimator, modelname, criterion, x, y, ylim=None, cv=5,
                           train_sizes=np.linspace(.1, 1.0, 5)):
-    if len(estimator != len(modelname)) and len(estimator) != len(specification):
+    if len(estimator) != len(criterion):
         print(Fore.YELLOW + f"Warning: The number of estimators vs number of modelnames is not equal: {len(estimator)}"
-                            f" vs. {len(modelname)} vs. {len(specification)}")
+                            f" vs. {len(criterion)}")
         return '-1'
     else:
+        plt.figure()
         color = [['r', 'g'], ['y', 'b']]
+        fig, axes = plt.subplots(1, 3, figsize=(20, 5))
         for i in range(len(estimator)):
-            _, axes = plt.subplots(1, 3, figsize=(20, 5))
             if ylim is not None:
                 axes[0].set_ylim(*ylim)
             train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(estimator[i], x, y, cv=cv,
@@ -155,30 +156,34 @@ def plot_learning_sklearn(estimator, modelname, specification, x, y, ylim=None, 
                                  test_scores_mean + test_scores_std, alpha=0.1, color=color[i][1])
             # Plot the scores mean
             axes[0].plot(train_sizes, train_scores_mean, 'o-', color=color[i][0],
-                         label=f"Training score ({specification[i]})")
+                         label=f"Training score ({criterion[i]})")
             axes[0].plot(train_sizes, test_scores_mean, 'o-', color=color[i][1],
-                         label=f"Cross-validation score ({specification[i]})")
+                         label=f"Cross-validation score ({criterion[i]})")
             # Add labels and legend
             axes[0].legend(loc="best")
             axes[0].set_xlabel("Number of training samples")
             axes[0].set_ylabel("Score")
-            axes[0].set_title(f"Learning curve: {modelname[i]}")
+            axes[0].set_title(f"Learning curve: {modelname}")
+            axes[0].grid(True)
 
             # Plot n_samples vs fit_times
             axes[1].grid()
-            axes[1].plot(train_sizes, fit_times_mean, 'o-', label=specification[i])
+            axes[1].plot(train_sizes, fit_times_mean, 'o-', label=criterion[i])
             axes[1].fill_between(train_sizes, fit_times_mean - fit_times_std, fit_times_mean + fit_times_std, alpha=0.1)
+            axes[1].legend(loc="best")
             axes[1].set_xlabel("Number of training samples")
             axes[1].set_ylabel("Time spent fitting")
             axes[1].set_title("Scalability of the model")
+            axes[1].grid(True)
 
             # Plot fit_time vs score
             axes[2].grid()
-            axes[2].plot(fit_times_mean, test_scores_mean, 'o-', label=specification[i])
+            axes[2].plot(fit_times_mean, test_scores_mean, 'o-', label=criterion[i])
             axes[2].fill_between(fit_times_mean, test_scores_mean - test_scores_std,
                                  test_scores_mean + test_scores_std, alpha=0.1)
+            axes[2].legend(loc="best")
             axes[2].set_xlabel("Time spent fitting")
             axes[2].set_ylabel("Score")
             axes[2].set_title("Performance of the model")
-
-        return plt
+            axes[2].grid(True)
+        return fig

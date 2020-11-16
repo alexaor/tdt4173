@@ -1,6 +1,5 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from methods.classifier import Classifier
 import gin
 
@@ -20,7 +19,7 @@ def decision_tree(**kwargs) -> Classifier:
     classifier
         A Decision Tree Classifier instance of the generic Classifier <methods.classifier.Classifier>
     """
-    return Classifier(DecisionTreeClassifier(**kwargs), 'Decision Tree')
+    return Classifier(DecisionTreeClassifier, 'Decision Tree', **kwargs)
 
 
 @gin.configurable
@@ -39,7 +38,7 @@ def random_forest(**kwargs) -> Classifier:
         A Random Forest Classifier instance of the generic Classifier <methods.classifier.Classifier>
     """
 
-    return Classifier(RandomForestClassifier(**kwargs), 'Random Forest')
+    return Classifier(RandomForestClassifier, 'Random Forest', **kwargs)
 
 
 @gin.configurable
@@ -57,9 +56,4 @@ def ada_boost(**kwargs) -> Classifier:
     classifier
         An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
     """
-    return Classifier(AdaBoostClassifier(**kwargs), 'Ada Boost')
-
-
-@gin.configurable
-def knn(**kwargs):
-    return Classifier(KNeighborsClassifier(**kwargs), 'KNN')
+    return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)
