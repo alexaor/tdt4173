@@ -13,8 +13,6 @@ def get_models(input_shape, keys):
         models['Ada Boost'] = methods.models.ada_boost()
     if 'Decision Tree' in keys:
         models['Decision Tree'] = methods.models.decision_tree()
-    if 'SVC' in keys:
-        models['SVC'] = methods.models.svc()
     if 'KNN' in keys:
         models['KNN'] = methods.models.knn()
     if 'DNN' in keys:
@@ -48,7 +46,7 @@ def plot_training_curves(models, x_train, y_train, plotname):
 
 def main():
     create_data_set('test')
-    keys = ['Ada Boost', 'KNN', 'SVC']
+    keys = ['Ada Boost', 'KNN']
     dnn_confusion_matrix = None
     x_train, y_train = utils.get_dataset('test_train.csv')
     x_test, y_test = utils.get_dataset('test_test.csv')

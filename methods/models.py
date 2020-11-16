@@ -1,33 +1,62 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn import svm
-from methods.classifier import Classifier, SVC
+from methods.classifier import Classifier
 import gin
 
 
 @gin.configurable
-def decision_tree(**kwargs):
+def decision_tree(**kwargs) -> Classifier:
     """
+    Method for returning a Decision Tree classifier
 
-    :param kwargs:          hyperparameters to the classifier, which is being defined in configs/hyperparameters.gin
-    :return:                Classifier, a custom class with functions   
+    Parameters
+    ----------
+    **kwargs
+        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+
+    Returns
+    -------
+    classifier
+        A Decision Tree Classifier instance of the generic Classifier <methods.classifier.Classifier>
     """
     return Classifier(DecisionTreeClassifier(**kwargs), 'Decision Tree')
 
 
 @gin.configurable
-def random_forest(**kwargs):
+def random_forest(**kwargs) -> Classifier:
+    """
+    Method for returning a Random Forest classifier
+
+    Parameters
+    ----------
+    **kwargs
+        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+
+    Returns
+    -------
+    classifier
+        A Random Forest Classifier instance of the generic Classifier <methods.classifier.Classifier>
+    """
+
     return Classifier(RandomForestClassifier(**kwargs), 'Random Forest')
 
 
 @gin.configurable
-def svc(**kwargs):
-    return SVC(svm.SVC(**kwargs), 'SVC')
+def ada_boost(**kwargs) -> Classifier:
+    """
+    Method for returning an Adaptive Boosting classifier
 
+    Parameters
+    ----------
+    **kwargs
+        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
 
-@gin.configurable
-def ada_boost(**kwargs):
+    Returns
+    -------
+    classifier
+        An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
+    """
     return Classifier(AdaBoostClassifier(**kwargs), 'Ada Boost')
 
 
