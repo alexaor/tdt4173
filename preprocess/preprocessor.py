@@ -11,7 +11,7 @@ from preprocess.tools import feature_selection
 from preprocess.tools import standarize_data
 
 
-def create_data_set(filename, n_features=-1, columns=np.r_[2:6,7:12,14:21,39:45,51:56,73:90,107,-1], rows=np.r_[:8378], test_size=0.2, feature_scale=True):
+def create_data_set(filename, n_features=-1, columns=np.r_[2:27,39:61,73:109,-1], rows=np.r_[:8378], test_size=0.2, feature_scale=True):
     ### Defining dataset paths
     origin = pathlib.Path('preprocess/speeddating.csv')
     train_path = pathlib.Path('preprocess/datasets/'+filename+"_train.csv")
@@ -26,8 +26,6 @@ def create_data_set(filename, n_features=-1, columns=np.r_[2:6,7:12,14:21,39:45,
     ### Impute missing data
     Z = impute_data(Z)
     
-    print(Z.columns.values)
-    print(len(Z.columns.values))
     ### Encode categorical data
     Z = encode_data(Z)
     
