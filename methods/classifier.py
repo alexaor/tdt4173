@@ -1,6 +1,7 @@
 import time
 import methods.utils as utils
 from sklearn.model_selection import ShuffleSplit
+from sklearn.tree import DecisionTreeClassifier
 
 
 class Classifier:
@@ -24,11 +25,14 @@ class Classifier:
     >>> classifier = Classifier(DecisionTreeClassifier, "Decision Tree")
     """
 
-    def __init__(self, cls, name):
-        self._model = cls  # Will never be trained, only used when plotting learning curve
-        self._fitted_model = cls
+    def __init__(self, cls, name, **kwargs):
+        self._classifier = cls
+        self._model = cls(**kwargs)
         self._name = name
         self._short_name = "".join([w[0].lower() for w in name.split()]) if len(name.split()) > 1 else name.lower()
+        self._kwargs = kwargs
+        if 'criterion' in kwargs.keys():
+            self._criterion = kwargs['criterion']
 
     def fit(self, x_train, y_train) -> None:
         """
@@ -46,10 +50,10 @@ class Classifier:
 
         time_0 = time.time()
         print(f"{self._name} - start fitting...")
-        self._fitted_model.fit(x_train, y_train)
+        self._model.fit(x_train, y_train)
         print(f"{self._name} - fit finished in {round(time.time() - time_0, 3)} s")
 
-    def plot_learning_curves(self, x_train, y_train, plot_name) -> None:
+    def plot_learning_curves(self, x_train, y_train, plot_name, compare_criterion=False) -> None:
         """
         Plots and saves the learning curves
 
@@ -63,14 +67,26 @@ class Classifier:
             as training input samples
 
         y_train : array
-            An array of output sample values used during trianing
+            An array of output sample values used during training
 
         plot_name : str
             Name of the plot, required to have the file extension `.png`
+
+        compare_criterion :  bool
+            If the learning curve should compare the two different criterion or not
         """
 
         cv = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0)  # TODO need to change this
-        plot = utils.plot_learning_sklearn(self._model, self._name, x_train, y_train, cv=cv)
+        criterions = ['gini', 'entropy']
+        if compare_criterion:
+            models = []
+            for criterion in criterions:
+                self._kwargs.pop('criterion')
+                self._kwargs['criterion'] = criterion
+                models.append(self._classifier(**self._kwargs))
+            plot = utils.plot_learning_sklearn(models, self._name, x_train, y_train, criterion=criterions, cv=cv)
+        else:
+            plot = utils.plot_learning_sklearn([self._classifier(**self._kwargs)], self._name, x_train, y_train, cv=cv)
         plot_path = utils.save_training_plot(plot, f'{self._short_name}_{plot_name}')
         print(f'{self._name} -> Saved training plot in directory: "{plot_path}"')
 
@@ -92,8 +108,8 @@ class Classifier:
             The predicted output values as boolean: [0, 1]
         """
 
-        y_pred_proba = self._fitted_model.predict_proba(x_test)[:, 1]
-        y_pred_bool = self._fitted_model.predict(x_test)
+        y_pred_proba = self._model.predict_proba(x_test)[:, 1]
+        y_pred_bool = self._model.predict(x_test)
         return y_pred_proba, y_pred_bool
 
     def save_model(self, filename) -> None:
@@ -106,7 +122,7 @@ class Classifier:
             name of the file of the trained model,  required to have a `.sav` extension
         """
 
-        utils.save_sklearn_model(filename, self._fitted_model, self._name)
+        utils.save_sklearn_model(filename, self._model, self._name)
 
     def load_model(self, filename) -> None:
         """
@@ -118,5 +134,5 @@ class Classifier:
             Name of the file of the trained model, required to have a `.sav` extension
         """
 
-        self._fitted_model = utils.load_sklearn_model(filename)
+        self._model = utils.load_sklearn_model(filename)
         print(f"{self._name} -> model loaded from: {filename}")
