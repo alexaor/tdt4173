@@ -2,6 +2,7 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 import numpy as np
 import evaluate.utils as utils
+from tensorflow_addons.metrics import CohenKappa
 
 
 """
@@ -17,6 +18,8 @@ filename is given it will save the evaluation in the file, regardless it will pr
 def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
     output = ""
     if dnn_conf_matrix is not None:
+        kappa = CohenKappa(num_classes=2)
+        kappa.update_state(y_true, methods['DNN'])
         methods['DNN'] = dnn_conf_matrix
     for key in methods.keys():
         if key == 'DNN':
@@ -31,7 +34,10 @@ def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
         output += f'\tActual YES\t| fn={fn}\t\t| tp={tp}\n'
         output += '\t------------+---------------+-----------\n'
         output += f'\tAccuracy: \t\t\t\t{round(accuracy(tp, tn, (tn+fp+fn+tp)), 3)}\n'
-        output += f'\tCohen kappa: \t\t\t{round(metrics.cohen_kappa_score(methods[key], y_true), 3)}\n'
+        if key != 'DNN':
+            output += f'\tCohen kappa: \t\t\t{round(metrics.cohen_kappa_score(methods[key], y_true), 3)}\n'
+        else:
+            output += f'\tCohen kappa: \t\t\t{round(kappa.result().numpy(), 3)}\n'
         output += f'\tMisclassification: \t\t{round(misclassification(tp, tn, (tn+fp+fn+tp)), 3)}\n'
         output += f'\tPrecision: \t\t\t\t{round(precision(tp, fp), 3)}\n'
         output += f'\tRecall: \t\t\t\t{round(recall(tp, fn), 3)}\n'
@@ -201,6 +207,8 @@ the keys are the method and the values are the result for the given evaluation m
 """
 def get_all_evaluations(y_true, methods, dnn_conf_matrix):
     if dnn_conf_matrix is not None:
+        kappa = CohenKappa(num_classes=2)
+        kappa.update_state(y_true, methods['DNN'])
         methods['DNN'] = dnn_conf_matrix
     evaluation = {'Accuracy': {},
                   'Misclassification': {},
@@ -224,7 +232,10 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
         evaluation['False negative rate'][key] = false_negative_rate(fn, tp)
         evaluation['False positive rate'][key] = false_positive_rate(fp, tn)
         evaluation['F1'][key] = f1(tp, fp, fn)
-        evaluation['Cohen kappa'][key] = metrics.cohen_kappa_score(methods[key], y_true)
+        if key != 'DNN':
+            evaluation['Cohen kappa'][key] = metrics.cohen_kappa_score(methods[key], y_true)
+        else:
+            evaluation['Cohen kappa'][key] = kappa.result().numpy()
     return evaluation
 
 

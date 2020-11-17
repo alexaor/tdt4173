@@ -47,7 +47,7 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
 
 
 def main():
-    keys = ['Random Forest', 'Decision Tree']
+    keys = ['DNN', 'Decision Tree']
     dnn_confusion_matrix = None
     x_train, y_train = utils.get_dataset('Features_50_train.csv')
     x_test, y_test = utils.get_dataset('Features_50_test.csv')
@@ -55,17 +55,18 @@ def main():
     models_proba, models_bool = get_all_predictions(models, x_test)
     if 'DNN' in keys:
         models_proba['DNN'], dnn_confusion_matrix = models['DNN'].evaluate(x_test, y_test)
+        models_bool['DNN'] = models_proba['DNN'].copy()
 
     print('\n\n================ Evaluation ================\n')
     # models['DNN'].plot_cross_evaluation(5, x_train, y_train, x_test, y_test, 'test.png')
     # models['DNN'].plot_model('DNN_network.png')
     # plot_training_curves(models, x_train, y_train, '50features.png', True)
-    evaluate.print_evaluation(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
+    # evaluate.print_evaluation(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     # evaluate.plot_roc_auc(y_test, models_proba)
     # evaluate.plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
-    #evaluate.plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Specificity', 'False positive rate'],
-    #                         dnn_conf_matrix=dnn_confusion_matrix)
-    evaluate.plot_precision_recall(y_test, models_proba, 'test.png')
+    evaluate.plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Specificity', 'False positive rate'],
+                             dnn_conf_matrix=dnn_confusion_matrix, filename='test.png')
+    # evaluate.plot_precision_recall(y_test, models_proba, 'test.png')
 
     # models['Decision Tree'].save_model('dt_tuned_50Features.sav')
     # models['Ada Boost'].save_model('ab_tuned_50Features.sav')

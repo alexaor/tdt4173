@@ -36,7 +36,6 @@ class DNN:
 
     def fit(self, x_train, y_train):
         self.epoch_history = self.model.fit(x_train, y_train, **self._kwargs)
-        print('HEI', self.model.metrics_names)
 
     def save_model(self, modelname):
         utils.save_tf_model(modelname, self.model)
@@ -118,9 +117,9 @@ class DNN:
         dataset[:, :-1] = x
         dataset[:, -1] = y
 
-        scores = {'loss': [], 'accuracy': [], 'mse': []}
-        cv_mean = {'loss': [], 'accuracy': [], 'mse': []}
-        cv_std = {'loss': [], 'accuracy': [], 'mse': []}
+        scores = {'Loss': [], 'Accuracy': [], 'MSE': []}
+        cv_mean = {'Loss': [], 'Accuracy': [], 'MSE': []}
+        cv_std = {'Loss': [], 'Accuracy': [], 'MSE': []}
 
         for size in train_sizes:
             if size != 1.0:
@@ -130,59 +129,34 @@ class DNN:
 
             mean, std, score = self._learning_evaluation(n_splits, train)
 
-            cv_mean['loss'].append(mean[0])
-            cv_mean['accuracy'].append(mean[1])
-            cv_mean['mse'].append(mean[2])
-            cv_std['loss'].append(std[0])
-            cv_std['accuracy'].append(std[1])
-            cv_std['mse'].append(std[2])
-            scores['loss'].append(score[0])
-            scores['accuracy'].append(score[1])
-            scores['mse'].append(score[2])
+            cv_mean['Loss'].append(mean[0])
+            cv_mean['Accuracy'].append(mean[1])
+            cv_mean['MSE'].append(mean[2])
+            cv_std['Loss'].append(std[0])
+            cv_std['Accuracy'].append(std[1])
+            cv_std['MSE'].append(std[2])
+            scores['Loss'].append(score[0])
+            scores['Accuracy'].append(score[1])
+            scores['MSE'].append(score[2])
 
         # Plot figure
         sizes = [int(len(x)*size) for size in train_sizes]
         fig, axes = plt.subplots(1, 3, figsize=(20, 5))
-        axes[0].fill_between(sizes,
-                             [cv_mean['accuracy'][i] - cv_std['accuracy'][i] for i in range(len(cv_mean['accuracy']))],
-                             [cv_mean['accuracy'][i] + cv_std['accuracy'][i] for i in range(len(cv_mean['accuracy']))],
-                             alpha=0.1, color='g')
-        axes[0].plot(sizes, cv_mean['accuracy'], '-o', color='g', label='Cross validation score')
-        axes[0].plot(sizes, scores['accuracy'], '-o', color='r', label='Training score')
-        axes[0].set_xlabel("Number of training samples")
-        axes[0].set_ylabel("Score")
-        axes[0].set_title(f"DNN - Accuracy")
-        axes[0].grid(True)
-        axes[0].legend(loc="best")
+        index = 0
+        for metric in cv_mean.keys():
+            axes[index].fill_between(sizes,
+                                     [cv_mean[metric][i] - cv_std[metric][i] for i in range(len(cv_mean[metric]))],
+                                     [cv_mean[metric][i] + cv_std[metric][i] for i in range(len(cv_mean[metric]))],
+                                     alpha=0.1, color='g')
+            axes[index].plot(sizes, cv_mean[metric], '-o', color='g', label='Cross validation score')
+            axes[index].plot(sizes, scores[metric], '-o', color='r', label='Training score')
+            axes[index].set_xlabel("Number of training samples")
+            axes[index].set_ylabel(metric)
+            axes[index].set_title(f"DNN - {metric}")
+            axes[index].grid(True)
+            axes[index].legend(loc="best")
 
-        axes[1].fill_between(sizes,
-                             [cv_mean['loss'][i] - cv_std['loss'][i] for i in range(len(cv_mean['loss']))],
-                             [cv_mean['loss'][i] + cv_std['loss'][i] for i in range(len(cv_mean['loss']))],
-                             alpha=0.1, color='g')
-        axes[1].plot(sizes, cv_mean['loss'], '-o', color='g', label='Cross validation score')
-        axes[1].plot(sizes, scores['loss'], '-o', color='r', label='Training score')
-        axes[1].set_xlabel("Number of training samples")
-        axes[1].set_ylabel("Loss")
-        axes[1].set_title(f"DNN - Loss")
-        axes[1].grid(True)
-        axes[1].legend(loc="best")
-
-        axes[2].fill_between(sizes,
-                             [cv_mean['mse'][i] - cv_std['mse'][i] for i in range(len(cv_mean['mse']))],
-                             [cv_mean['mse'][i] + cv_std['mse'][i] for i in range(len(cv_mean['mse']))],
-                             alpha=0.1, color='g')
-        axes[2].plot(sizes, cv_mean['mse'], '-o', color='g', label='Cross validation score')
-        axes[2].plot(sizes, scores['mse'], '-o', color='r', label='Training score')
-        axes[2].set_xlabel("Number of training samples")
-        axes[2].set_ylabel("Score")
-        axes[2].set_title(f"DNN - MSE")
-        axes[2].grid(True)
-        axes[2].legend(loc="best")
+            index += 1
 
         plotpath = utils.save_training_plot(fig, f'dnn_cv_{filename}')
         print(f'\t DNN -> Saved training plot in directory: "{plotpath}"')
-
-
-
-
-
