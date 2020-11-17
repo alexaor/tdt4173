@@ -8,19 +8,47 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import SelectKBest
 
 
-def filter_desired_features(df, columns):
-    Z = df.iloc[:, columns].values
-    column_labels = df.columns.values[columns]
+def filter_desired_features(dataframe, columns):
+    """
+    Method to pick out specified features from a data set
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        Dataframe containing data to choose features from
+    columns : numpy.ndarray
+        Indexes of columns to be selected from the original dataframe
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        A dataframe containing the imputed data
+    """
+    
+    Z = dataframe.iloc[:, columns].values
+    column_labels = dataframe.columns.values[columns]
     
     df = pd.DataFrame(Z, columns = column_labels)
     return df
     
-def impute_data(df):
-    ## Import and reduce dataset ##
-    Z = df.iloc[:, :].values
-    column_labels = df.columns.values
+def impute_data(dataframe):
+    """
+    Method to impute missing values, denoted by '?', in a data set. 
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        Dataframe containing data to be imputed
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        A dataframe containing the imputed data
+    """
     
-    ## Impute dataset ##
+    Z = dataframe.iloc[:, :].values
+    column_labels = dataframe.columns.values
+    
     imputer = SimpleImputer(missing_values='?', strategy='most_frequent')
     imputer.fit(Z)
     Z_imputed = imputer.transform(Z)
@@ -28,10 +56,21 @@ def impute_data(df):
     df = pd.DataFrame(Z_imputed, columns = column_labels)
     return df
     
-"""
-@param data_row: One dimensional array with eather categorical or non-categorical data
-"""
+
 def get_categorical_indexes(data_row):
+    """
+    Helper function. Finds the indexes of categorical data by iterating through a single data row.
+
+    Parameters
+    ----------
+    data_row : numpy.ndarray
+        Any row of features from the data-set
+
+    Returns
+    -------
+    index_list : List
+        A list of indexes to features containing categorical data
+    """
     index_list = []
     for i in range(len(data_row)):
         try: 
@@ -42,26 +81,37 @@ def get_categorical_indexes(data_row):
     return index_list
 
 
-"""
-@param X: Array of variables to encode
-@param index_list: List of column indexes that should be transformed
-"""
-def encode_data(dataset):
-    dataset = dataset.apply(lambda x: x.astype(str).str.lower())
-    ## Retrieving values and column_names ##
-    X = dataset.iloc[:, :].values
-    column_names = dataset.columns.values
+def encode_data(dataframe):
+    """
+    Method for encoding gategorical features of a dataset
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        Dataframe containing data to be encoded
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        A dataframe containing the encoded data
+    """
+    
+    #avoid multiple encodings for spelling differences
+    dataframe = dataframe.apply(lambda x: x.astype(str).str.lower())
+    
+    # Retrieving values and column_names
+    X = dataframe.iloc[:, :].values
+    column_names = dataframe.columns.values
     cat_cols = get_categorical_indexes(X[1,:])
     cat_col_names = column_names[cat_cols]
 
-    ## Transformation ##
-    print("___transforming columns "+str(cat_cols)+"___")
+    # Transform data by means of one hot encoding
     transformers=[(str(cat_col_names[i]), OneHotEncoder(sparse = False), [cat_cols[i]])
                   for i in range(len(cat_cols))]
     ct = ColumnTransformer(transformers, remainder='passthrough')
     X = np.array(ct.fit_transform(X))
     
-    ## Create DataFrame with proper column names ##
+    # Return dataframe with column-names adjusted to reflect their encodings
     column_names = np.delete(column_names, cat_cols)
     cat_col_names = ct.get_feature_names()
     cat_col_names = [raw.replace("_x0_", "") for raw in cat_col_names]
@@ -72,47 +122,74 @@ def encode_data(dataset):
     return df.astype(np.float)
 
 
-def feature_selection(Z, n_features):
-    X = Z.iloc[:, :-1].values
-    Y = Z.iloc[:, -1].values
+def feature_selection(dataframe, n_features):
+    """
+    Method for selecting the best features for classification by comparing f-values
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        Dataframe containing data to be feature selected
+    n_featurs : int
+        Number of features to be selected
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        A dataframe containing the feature selected data set
+    """
+    
+    X = dataframe.iloc[:, :-1].values
+    Y = dataframe.iloc[:, -1].values
 
     feature_selector = SelectKBest(k = n_features)
     feature_selector.fit(X, Y)
     
     column_selections = feature_selector.get_support()
     selected_cols = [col for col in range(len(column_selections)) if column_selections[col]]
-    
-    labels = Z.columns.values[np.r_[selected_cols, -1]]
+    labels = dataframe.columns.values[np.r_[selected_cols, -1]]
     
     X = feature_selector.transform(X)
     Y = Y.reshape(Y.shape[0], 1)
     X_new = np.hstack((X, Y))
     
     df = pd.DataFrame(X_new, columns=labels)
-
     return df
     
 
+def standarize_data(df_train, df_test):
+    """
+    Method for standarizing a train and test set. Note: The standarizer is only trained on the training data
 
-"""
-@param X_train: Array of training data
-@param X_test: Array of test data
-"""
-def standarize_data(Z_train, Z_test):
-    X_train = Z_train.iloc[:, :-1].values
-    y_train = Z_train.iloc[:, -1].values
-    X_test = Z_test.iloc[:, :-1].values
-    y_test = Z_test.iloc[:, -1].values
+    Parameters
+    ----------
+    df_train : pandas.DataFrame
+        Dataframe containing training set to be standarized
+    df_test : pandas.DataFrame
+        Dataframe containing test set to be standarized
+
+    Returns
+    -------
+    df_train_std : pandas.DataFrame
+        Dataframe containing standarized training set
+    df_test_std : pandas.DataFrame
+        Dataframe containing standarized test set
+    """
+    
+    X_train = df_train.iloc[:, :-1].values
+    y_train = df_train.iloc[:, -1].values
+    X_test = df_test.iloc[:, :-1].values
+    y_test = df_test.iloc[:, -1].values
     
     y_train = y_train.reshape(y_train.shape[0], 1)
     y_test = y_test.reshape(y_test.shape[0], 1)
     
     sc = StandardScaler()
-    X_train_scaled = sc.fit_transform(X_train)
-    X_test_scaled = sc.transform(X_test)
+    X_train_std = sc.fit_transform(X_train)
+    X_test_std = sc.transform(X_test)
 
-    cols = Z_train.columns.values
-    df_train = pd.DataFrame(np.hstack((X_train_scaled, y_train)), columns = cols)
-    df_test = pd.DataFrame(np.hstack((X_test_scaled, y_test)), columns = cols)
+    cols = df_train.columns.values
+    df_train_std = pd.DataFrame(np.hstack((X_train_std, y_train)), columns = cols)
+    df_test_std = pd.DataFrame(np.hstack((X_test_std, y_test)), columns = cols)
     
-    return df_train, df_test
+    return df_train_std, df_test_std

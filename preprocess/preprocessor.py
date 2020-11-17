@@ -3,7 +3,6 @@ import pandas as pd
 import pathlib
 
 from sklearn.model_selection import train_test_split
-
 from preprocess.tools import filter_desired_features
 from preprocess.tools import impute_data
 from preprocess.tools import encode_data
@@ -11,7 +10,26 @@ from preprocess.tools import feature_selection
 from preprocess.tools import standarize_data
 
 
-def create_data_set(filename, n_features=-1, columns=np.r_[2:27,39:61,73:109,-1], rows=np.r_[:8378], test_size=0.2, feature_scale=True):
+def create_data_set(filename, n_features=-1, test_size=0.2,
+                    feature_scale=True) -> None:
+    """
+    Method for creating a data set with specified properties.
+    New data set will be written to the dataset folder
+
+    Parameters
+    ----------
+    filename : string
+        Name of the created dataset
+    n_features : int, optional
+        Number of features selected. Defaults to -1, no feature selection      
+    test_size : float, optional
+        Specified how much of the data is test set. Default to 0.2
+    feature_scale : Bool, optional
+        Specifies if feature scaling is desired. Defaults to True.
+        
+    
+    """
+    
     ### Defining dataset paths
     origin = pathlib.Path('preprocess/speeddating.csv')
     train_path = pathlib.Path('preprocess/datasets/'+filename+"_train.csv")
@@ -21,6 +39,7 @@ def create_data_set(filename, n_features=-1, columns=np.r_[2:27,39:61,73:109,-1]
     Z = pd.read_csv(origin, dtype="str")
     
     ### Remove unwanted attributes
+    columns=np.r_[2:27,39:61,73:109,-1]
     Z = filter_desired_features(Z, columns)
     
     ### Impute missing data
