@@ -154,10 +154,7 @@ def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, c
                                  train_scores_mean + train_scores_std, alpha=0.1, color=color[i][0])
             axes[0].fill_between(train_sizes, test_scores_mean - test_scores_std,
                                  test_scores_mean + test_scores_std, alpha=0.1, color=color[i][1])
-            # Plot the scores mean
-
-
-            # Add labels and legend
+            # Special case if there is two models to plot
             if criterion:
                 axes[0].plot(train_sizes, train_scores_mean, 'o-', color=color[i][0],
                              label=f"Training score ({criterion[i]})")
