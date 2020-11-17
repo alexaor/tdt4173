@@ -31,6 +31,7 @@ def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
         output += f'\tActual YES\t| fn={fn}\t\t| tp={tp}\n'
         output += '\t------------+---------------+-----------\n'
         output += f'\tAccuracy: \t\t\t\t{round(accuracy(tp, tn, (tn+fp+fn+tp)), 3)}\n'
+        output += f'\tCohen kappa: \t\t\t{round(metrics.cohen_kappa_score(methods[key], y_true), 3)}\n'
         output += f'\tMisclassification: \t\t{round(misclassification(tp, tn, (tn+fp+fn+tp)), 3)}\n'
         output += f'\tPrecision: \t\t\t\t{round(precision(tp, fp), 3)}\n'
         output += f'\tRecall: \t\t\t\t{round(recall(tp, fn), 3)}\n'
@@ -54,11 +55,11 @@ def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
 Creates a ROC curve with the given inputs, and calculate the AUC for each methods. If no filename is given the plot
 will not be saved, only shown.
 """
-def plot_roc_auc(y_true, methods, filename=""):
+def plot_roc_auc(y_true, methods, filename):
     auc = []
     fig, ax = plt.subplots()
     for key in methods.keys():
-        fpr, tpr, thresholds = metrics.roc_curve(y_true, methods[key])
+        fpr, tpr, _ = metrics.roc_curve(y_true, methods[key])
         auc.append(metrics.auc(fpr, tpr))
         ax.plot(fpr, tpr)
     ax.plot([0, 1], [0, 1], linestyle='--')  # plt no skill
@@ -69,11 +70,25 @@ def plot_roc_auc(y_true, methods, filename=""):
     fig.legend(labels, loc=7, bbox_to_anchor=(0.9, 0.3))
     ax.set_title('ROC curve')
     ax.grid(True)
-    if len(filename) > 0:
-        file_path = utils.save_plot(fig, filename)
-        print(f"Saved ROC plot in directory: '{file_path}'")
-    else:
-        plt.show()
+    # Save plot
+    file_path = utils.save_plot(fig, filename)
+    print(f"Saved ROC plot at: '{file_path}'")
+
+
+def plot_precision_recall(y_true, methods, filename):
+    fig, ax = plt.subplots()
+    for model in methods.keys():
+        ap = metrics.average_precision_score(y_true, methods[model])
+        pre, rec, _ = metrics.precision_recall_curve(y_true, methods[model])
+        ax.plot(pre, rec, label=f'{model}, AP = {round(ap, 2)}')
+    ax.set_ylabel('Precision')
+    ax.set_xlabel('Recall')
+    ax.set_title('Precision Recall Curve')
+    ax.grid(True)
+    ax.legend(loc='best')
+    # Save plot
+    file_path = utils.save_plot(fig, filename)
+    print(f"Saved Precision Recall curve at: '{file_path}'")
 
 
 """
@@ -85,7 +100,7 @@ def plot_roc_auc(y_true, methods, filename=""):
 Makes a separate plot for each evaluation method, where all the methods in the dictionary 'methods' are being
 compared to one another. The plots are either saved in the directory with given name, or just shown to the user.
 """
-def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None):
+def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None):
     if len(dirname) > 0:
         utils.make_plot_dir(dirname)
     evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
@@ -114,12 +129,9 @@ def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None):
                          textcoords="offset points",
                          ha='center', va='bottom')
 
-        # Save or show the plots
-        if len(dirname) > 0:
-            plot_dir = utils.save_plot(fig, f'{key}.png', dirname)
-            print(f"Saved all evaluations plot in directory: '{plot_dir}'")
-        else:
-            fig.show()
+        # Save plot
+        plot_dir = utils.save_plot(fig, f'{key}.png', dirname)
+        print(f"Saved all evaluations plot in directory: '{plot_dir}'")
 
 
 """
@@ -132,7 +144,7 @@ def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None):
 Compares the methods in the methods dictionary with the wanted evaluations method. Either saves the plot, or shows it 
 to the user. 
 """
-def plot_comparison(y_true, methods, evallist, filename="", dnn_conf_matrix=None):
+def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None):
     evallist = [evaluation.lower() for evaluation in evallist]
     all_evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
     evaluations = {}
@@ -172,13 +184,9 @@ def plot_comparison(y_true, methods, evallist, filename="", dnn_conf_matrix=None
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     fig.tight_layout()
     ax.set_ylim(0, 110)
-
     # Save or show plots
-    if len(filename) > 0:
-        plot_dir = utils.save_plot(fig, filename)
-        print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
-    else:
-        fig.show()
+    plot_dir = utils.save_plot(fig, filename)
+    print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
 
 
 """
@@ -201,7 +209,8 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
                   'Specificity': {},
                   'False positive rate': {},
                   'False negative rate': {},
-                  'F1': {}}
+                  'F1': {},
+                  'Cohen kappa': {}}
     for key in methods.keys():
         if key == 'DNN':
             tn = dnn_conf_matrix[0]; fp = dnn_conf_matrix[1]; fn = dnn_conf_matrix[2]; tp = dnn_conf_matrix[3]
@@ -215,6 +224,7 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
         evaluation['False negative rate'][key] = false_negative_rate(fn, tp)
         evaluation['False positive rate'][key] = false_positive_rate(fp, tn)
         evaluation['F1'][key] = f1(tp, fp, fn)
+        evaluation['Cohen kappa'][key] = metrics.cohen_kappa_score(methods[key], y_true)
     return evaluation
 
 
