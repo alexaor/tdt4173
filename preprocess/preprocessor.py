@@ -10,8 +10,7 @@ from preprocess.tools import feature_selection
 from preprocess.tools import standarize_data
 
 
-def create_data_set(filename, n_features=-1,
-                    columns=np.r_[2:27,39:61,73:109,-1], test_size=0.2, 
+def create_data_set(filename, n_features=-1, test_size=0.2,
                     feature_scale=True) -> None:
     """
     Method for creating a data set with specified properties.
@@ -23,9 +22,6 @@ def create_data_set(filename, n_features=-1,
         Name of the created dataset
     n_features : int, optional
         Number of features selected. Defaults to -1, no feature selection      
-    columns : numpy.ndarray, optional
-        Indexes of features to keep from the original data set. 
-        Default chooses all indexes containing prior knowledge of participants.
     test_size : float, optional
         Specified how much of the data is test set. Default to 0.2
     feature_scale : Bool, optional
@@ -43,6 +39,7 @@ def create_data_set(filename, n_features=-1,
     Z = pd.read_csv(origin, dtype="str")
     
     ### Remove unwanted attributes
+    columns=np.r_[2:27,39:61,73:109,-1]
     Z = filter_desired_features(Z, columns)
     
     ### Impute missing data
