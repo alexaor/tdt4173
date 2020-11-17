@@ -12,7 +12,7 @@ image2: /assets/article_images/2014-11-30-mediator_features/night-track-mobile.J
 ---
 # How to blogpost
 This is written in markdown. For markdown cheatsheet look at [this link](https://www.markdownguide.org/cheat-sheet/).
-
+The filename has to be on the format as shown in the filename of this post, namely YEAR-MONTH-DAY-name-of-post.markdown
 ## Metainformation
 The top section of the file includes a set of context variables which are injected into the rendered template.
 The only thing which probably has to be edited are variables such as `author`, `author_bio`, `image` 
