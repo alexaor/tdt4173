@@ -56,4 +56,5 @@ def ada_boost(**kwargs) -> Classifier:
     classifier
         An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
     """
+    kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=2, max_features='log2')
     return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)

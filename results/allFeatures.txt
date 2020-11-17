@@ -1,0 +1,68 @@
+------ Random Forest ------
+	Confusion matrix:
+				| Pred NO		| Pred YES
+	------------+---------------+-----------
+	Actual NO	| tn=1366		| fp=2
+	Actual YES	| fn=300		| tp=8
+	------------+---------------+-----------
+	Accuracy: 				0.82
+	Misclassification: 		0.18
+	Precision: 				0.8
+	Recall: 				0.026
+	Specificity: 			0.999
+	False positive rate: 	0.001
+	False negative rate: 	0.974
+	F1: 					0.05
+
+
+------ Ada Boost ------
+	Confusion matrix:
+				| Pred NO		| Pred YES
+	------------+---------------+-----------
+	Actual NO	| tn=1347		| fp=21
+	Actual YES	| fn=281		| tp=27
+	------------+---------------+-----------
+	Accuracy: 				0.82
+	Misclassification: 		0.18
+	Precision: 				0.562
+	Recall: 				0.088
+	Specificity: 			0.985
+	False positive rate: 	0.015
+	False negative rate: 	0.912
+	F1: 					0.152
+
+
+------ Decision Tree ------
+	Confusion matrix:
+				| Pred NO		| Pred YES
+	------------+---------------+-----------
+	Actual NO	| tn=1359		| fp=9
+	Actual YES	| fn=303		| tp=5
+	------------+---------------+-----------
+	Accuracy: 				0.814
+	Misclassification: 		0.186
+	Precision: 				0.357
+	Recall: 				0.016
+	Specificity: 			0.993
+	False positive rate: 	0.007
+	False negative rate: 	0.984
+	F1: 					0.031
+
+
+------ DNN ------
+	Confusion matrix:
+				| Pred NO		| Pred YES
+	------------+---------------+-----------
+	Actual NO	| tn=1298.0		| fp=70.0
+	Actual YES	| fn=265.0		| tp=43.0
+	------------+---------------+-----------
+	Accuracy: 				0.800000011920929
+	Misclassification: 		0.2
+	Precision: 				0.38100001215934753
+	Recall: 				0.14000000059604645
+	Specificity: 			0.9490000009536743
+	False positive rate: 	0.050999999046325684
+	False negative rate: 	0.8600000143051147
+	F1: 					0.204
+
+

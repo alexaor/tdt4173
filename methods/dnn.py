@@ -20,10 +20,13 @@ class DNN:
 
     def create_model(self, input_shape, dropout):
         return tf.keras.Sequential([
-            tf.keras.Input(shape=input_shape),
-            layers.Dense(units=20, activation='relu'),
-            layers.Dense(units=40, activation='relu'),
+
+            layers.Dense(units=40, activation='relu', input_shape=input_shape),
             layers.Dropout(dropout),
+            layers.Dense(units=30, activation='relu'),
+            layers.Dense(units=16, activation='relu'),
+            layers.Dense(units=8, activation='relu'),
+            layers.Dense(units=4, activation='relu'),
             layers.Dense(units=1, activation='sigmoid')
         ])
 
