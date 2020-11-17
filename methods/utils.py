@@ -42,7 +42,7 @@ def save_sklearn_model(modelname, model, method):
         modelpath = os.path.join(model_output_dir, modelname)
         os.makedirs(model_output_dir, exist_ok=True)
         print(f"{method} -> Saving model to: {modelpath}")
-        pickle.dump(model, open(modelname, 'wb'))
+        pickle.dump(model, open(modelpath, 'wb'))
     else:
         print(Fore.YELLOW + f"Warning: File extension unknown: {modelname.split('.')[-1]} \t-->\t should be .sav")
         print(Style.RESET_ALL)
@@ -86,7 +86,7 @@ def load_tf_model(modelname):
 
 def get_dataset(filename):
     dataset = pd.read_csv(os.path.join(dataset_path, filename))
-    x_train = dataset.iloc[:, :-3].values
+    x_train = dataset.iloc[:, :-1].values
     y_train = dataset.iloc[:, -1].values
     return x_train, y_train
 
@@ -154,10 +154,7 @@ def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, c
                                  train_scores_mean + train_scores_std, alpha=0.1, color=color[i][0])
             axes[0].fill_between(train_sizes, test_scores_mean - test_scores_std,
                                  test_scores_mean + test_scores_std, alpha=0.1, color=color[i][1])
-            # Plot the scores mean
-
-
-            # Add labels and legend
+            # Special case if there is two models to plot
             if criterion:
                 axes[0].plot(train_sizes, train_scores_mean, 'o-', color=color[i][0],
                              label=f"Training score ({criterion[i]})")

@@ -76,7 +76,7 @@ class Classifier:
             If the learning curve should compare the two different criterion or not
         """
 
-        cv = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0)  # TODO need to change this
+        cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)  # TODO need to change this
         criterions = ['gini', 'entropy']
         if compare_criterion:
             models = []
