@@ -8,3 +8,6 @@ Welcome to TDT4173 - Machine Learning Project's documentation!
    content/models
    content/util
 
+
+.. autoclass:: methods.classifier.Classifier
+        :members:
