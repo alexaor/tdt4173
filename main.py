@@ -14,11 +14,10 @@ from evaluation.evaluate import (
 from methods.models import Models
 from preprocessing.preprocessor import create_data_set
 
-dataset_path = pathlib.Path('preprocessing/datasets')
-
+from configs.project_settings import DATASET_PATH
 
 def get_dataset(filename):
-    dataset = read_csv(join(dataset_path, filename))
+    dataset = read_csv(join(DATASET_PATH, filename))
     x_train = dataset.iloc[:, :-1].values
     y_train = dataset.iloc[:, -1].values
     return x_train, y_train
@@ -66,15 +65,15 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
 def main():
     keys = ['Random Forest', 'Decision Tree', 'Ada Boost', 'DNN']
     dnn_confusion_matrix = None
-    x_train, y_train = get_dataset('features_all_train.csv')
-    x_test, y_test = get_dataset('features_all_test.csv')
+    x_train, y_train = get_dataset('02_features_50_train.csv')
+    x_test, y_test = get_dataset('02_features_50_test.csv')
 
-    models = get_models((len(x_train[0]),), keys)
-    # models = fit_all_models(get_models((len(x_train[0]),), keys), x_train, y_train)
-    models['DNN'].load_model('dnn_test.h5')
-    models['Ada Boost'].load_model('ab_tuned_all_features.sav')
-    models['Decision Tree'].load_model('dt_tuned_all_features.sav')
-    models['Random Forest'].load_model('rf_tuned_all_features.sav')
+    #models = get_models((len(x_train[0]),), keys)
+    models = fit_all_models(get_models((len(x_train[0]),), keys), x_train, y_train)
+    # models['DNN'].load_model('dnn_test.h5')
+    # models['Ada Boost'].load_model('ab_tuned_all_features.sav')
+    # models['Decision Tree'].load_model('dt_tuned_all_features.sav')
+    # models['Random Forest'].load_model('rf_tuned_all_features.sav')
 
     models_proba, models_bool = get_all_predictions(models, x_test)
     if 'DNN' in keys:
@@ -89,18 +88,18 @@ def main():
     # plot_roc_auc(y_test, models_proba, 'roc_features_50.png')
     # models_bool['DNN'] = models_proba['DNN'].copy()
     # plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
-    plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
-                    dnn_conf_matrix=dnn_confusion_matrix, filename='comparison_features_all_no_class_weight.png')
-    plot_precision_recall(y_test, models_proba, 'pr_test.png')
+    ### plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
+    ### dnn_conf_matrix=dnn_confusion_matrix, filename='comparison_features_all_no_class_weight.png')
+    #plot_precision_recall(y_test, models_proba, 'pr_test.png')
 
     # Saving models
-    # models['Decision Tree'].save_model('dt_tuned_50_features.sav')
-    # models['Ada Boost'].save_model('ab_tuned_all_features.sav')
-    # models['Random Forest'].save_model('rf_tuned_all_features.sav')
-    # models['DNN'].save_model('dnn_test.h5')
+    models['Decision Tree'].save_model('dt_tuned_50_features.sav')
+    models['Ada Boost'].save_model('ab_tuned_all_features.sav')
+    models['Random Forest'].save_model('rf_tuned_all_features.sav')
+    models['DNN'].save_model('dnn_test.h5')
 
 
 if __name__ == "__main__":
-    # create_data_set('Features_50', n_features=50)
+    create_data_set('features_50', n_features=50)
     parse_config_file('configs/hyperparameters.gin')
     main()

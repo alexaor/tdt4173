@@ -32,8 +32,8 @@ def create_data_set(filename, n_features=-1, test_size=0.2,
 
     ### Defining dataset paths
     origin = os.path.join(DATASET_PATH, "01_raw_speeddating.csv")
-    train_path = os.path.join(DATASET_PATH, f"{filename}_train.csv")
-    test_path = os.path.join(DATASET_PATH, f"{filename}_test.csv")
+    train_path = os.path.join(DATASET_PATH, f"02_{filename}_train.csv")
+    test_path = os.path.join(DATASET_PATH, f"02_{filename}_test.csv")
 
     ### Loading dataset
     Z = pd.read_csv(origin, dtype="str")
