@@ -93,13 +93,13 @@ def main():
     #plot_precision_recall(y_test, models_proba, 'pr_test.png')
 
     # Saving models
-    models['Decision Tree'].save_model('dt_tuned_50_features.sav')
-    models['Ada Boost'].save_model('ab_tuned_all_features.sav')
-    models['Random Forest'].save_model('rf_tuned_all_features.sav')
-    models['DNN'].save_model('dnn_test.h5')
+    #models['Decision Tree'].save_model('dt_tuned_50_features.sav')
+    #models['Ada Boost'].save_model('ab_tuned_all_features.sav')
+    #models['Random Forest'].save_model('rf_tuned_all_features.sav')
+    #models['DNN'].save_model('dnn_test.h5')
 
 
 if __name__ == "__main__":
-    create_data_set('features_50', n_features=50)
+    #create_data_set('features_50', n_features=50)
     parse_config_file('configs/hyperparameters.gin')
     main()
