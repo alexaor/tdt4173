@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
-import pathlib
+import os
+
+from configs.project_settings import DATASET_PATH
 
 from sklearn.model_selection import train_test_split
 from preprocessing.tools import filter_desired_features
@@ -26,28 +28,26 @@ def create_data_set(filename, n_features=-1, test_size=0.2,
         Specified how much of the data is test set. Default to 0.2
     feature_scale : Bool, optional
         Specifies if feature scaling is desired. Defaults to True.
-        
-    
     """
-    
+
     ### Defining dataset paths
-    origin = pathlib.Path('preprocess/speeddating.csv')
-    train_path = pathlib.Path('preprocess/datasets/'+filename+"_train.csv")
-    test_path = pathlib.Path('preprocess/datasets/'+filename+"_test.csv")
-        
+    origin = os.path.join(DATASET_PATH, "01_raw_speeddating.csv")
+    train_path = os.path.join(DATASET_PATH, f"{filename}_train.csv")
+    test_path = os.path.join(DATASET_PATH, f"{filename}_test.csv")
+
     ### Loading dataset
     Z = pd.read_csv(origin, dtype="str")
-    
+
     ### Remove unwanted attributes
-    columns=np.r_[2:27,39:61,73:109,-1]
+    columns = np.r_[2:27, 39:61, 73:109, -1]
     Z = filter_desired_features(Z, columns)
-    
+
     ### Impute missing data
     Z = impute_data(Z)
-    
+
     ### Encode categorical data
     Z = encode_data(Z)
-    
+
     if n_features != -1:
         ### Choose best n_features
         Z = feature_selection(Z, n_features)
@@ -58,7 +58,7 @@ def create_data_set(filename, n_features=-1, test_size=0.2,
     ### Feature scaling by means of standarization
     if feature_scale:
         Z_train, Z_test = standarize_data(Z_train, Z_test)
-        
+
     ### Save processed dataset
     Z_train.to_csv(train_path, index=False)
     Z_test.to_csv(test_path, index=False)
