@@ -1,7 +1,7 @@
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import numpy as np
-import evaluate.utils as utils
+import evaluation.utils as utils
 from tensorflow_addons.metrics import CohenKappa
 
 

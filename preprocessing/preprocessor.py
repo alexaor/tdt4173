@@ -3,11 +3,11 @@ import pandas as pd
 import pathlib
 
 from sklearn.model_selection import train_test_split
-from preprocess.tools import filter_desired_features
-from preprocess.tools import impute_data
-from preprocess.tools import encode_data
-from preprocess.tools import feature_selection
-from preprocess.tools import standarize_data
+from preprocessing.tools import filter_desired_features
+from preprocessing.tools import impute_data
+from preprocessing.tools import encode_data
+from preprocessing.tools import feature_selection
+from preprocessing.tools import standarize_data
 
 
 def create_data_set(filename, n_features=-1, test_size=0.2,

@@ -1,14 +1,20 @@
-from evaluate.evaluate import plot_precision_recall, plot_roc_auc, plot_evaluation_result, plot_comparison, \
-    print_evaluation
-from gin import parse_config_file
-from preprocess.preprocessor import create_data_set
-from os.path import join
-from pandas import read_csv
-from methods.models import Models
-
 import pathlib
+from os.path import join
 
-dataset_path = pathlib.Path('preprocess/datasets')
+from pandas import read_csv
+from gin import parse_config_file
+
+from evaluation.evaluate import (
+    plot_precision_recall,
+    plot_roc_auc,
+    plot_evaluation_result,
+    plot_comparison,
+    print_evaluation
+)
+from methods.models import Models
+from preprocessing.preprocessor import create_data_set
+
+dataset_path = pathlib.Path('preprocessing/datasets')
 
 
 def get_dataset(filename):
@@ -81,8 +87,8 @@ def main():
     # plot_training_curves(models, x_train, y_train, 'all_features.png', True)
     print_evaluation(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     # plot_roc_auc(y_test, models_proba, 'roc_features_50.png')
-    #models_bool['DNN'] = models_proba['DNN'].copy()
-    #plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
+    # models_bool['DNN'] = models_proba['DNN'].copy()
+    # plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
                     dnn_conf_matrix=dnn_confusion_matrix, filename='comparison_features_all_no_class_weight.png')
     plot_precision_recall(y_test, models_proba, 'pr_test.png')
