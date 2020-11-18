@@ -9,95 +9,102 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 import tensorflow as tf
 
-model_output_dir = pathlib.Path(os.path.join('methods', 'saved_models'))
-model_output_dir.mkdir(exist_ok=True, parents=True)
+from configs.project_settings import MODELS_PATH, PLOTS_PATH
 
-dataset_path = pathlib.Path('preprocess/datasets')
+MODEL_DIR = pathlib.Path(MODELS_PATH)
+MODEL_DIR.mkdir(exist_ok=True, parents=True)
 
-training_plot_dir = pathlib.Path(os.path.join('methods', 'training_plots'))
-training_plot_dir.mkdir(exist_ok=True, parents=True)
-
-"""
-:param modelpath:   string, path to the model
-:return             bool, true if the file exist and false if it don't
-
-Checks if there is a file in at the end of the modelpath
-"""
+TRAINING_PLOT_DIR = pathlib.Path(PLOTS_PATH, "training_plots")
+TRAINING_PLOT_DIR.mkdir(exist_ok=True, parents=True)
 
 
-def model_exist(modelpath):
-    return os.path.isfile(modelpath)
+def save_sklearn_model(model_name, model, method):
+    """
+    Saves the model with given model_name in a directory specified in project settings
 
+    Parameters
+    ----------
 
-"""
-:param modelname:   string, name of the model
-:param model:       sklearn class model
+    model_name : str
+        name of the model
+    method : str
+        name of the method being saved
+    model : sklearn.base.BaseEstimator
+        sklearn class model to be saved
+    """
 
-Saves the model with given modelname in the directory 'saved models'.
-"""
-
-
-def save_sklearn_model(modelname, model, method):
-    if modelname.endswith('.sav'):
-        modelpath = os.path.join(model_output_dir, modelname)
-        os.makedirs(model_output_dir, exist_ok=True)
-        print(f"{method} -> Saving model to: {modelpath}")
-        pickle.dump(model, open(modelpath, 'wb'))
+    if model_name.endswith('.sav'):
+        model_path = os.path.join(MODEL_DIR, model_name)
+        os.makedirs(MODEL_DIR, exist_ok=True)
+        print(f"{method} -> Saving model to: '{model_path}'")
+        pickle.dump(model, open(model_path, 'wb'))
     else:
-        print(Fore.YELLOW + f"Warning: File extension unknown: {modelname.split('.')[-1]} \t-->\t should be .sav")
+        print(Fore.YELLOW + f"Warning: File extension unknown: {model_name.split('.')[-1]} \t-->\t should be .sav")
         print(Style.RESET_ALL)
 
 
-"""
-:param modelname:   string, name of the model
-:return             sklearn class model
+def load_sklearn_model(model_name, method):
+    """
+    Loads and returns a saved sklearn model instance
 
-Returns the model saved with 'modelname', if the model does not exist it will exit the program with exit with exit 
-code 1.
-"""
+    Returns the model saved with 'model_name', if the model does not exist it will exit the program with exit with exit
+    code 1.
 
+    Parameters
+    ----------
 
-def load_sklearn_model(modelname):
-    modelpath = os.path.join(model_output_dir, modelname)
-    if model_exist(modelpath):
-        return pickle.load(open(modelpath, 'rb'))
+    model_name : str
+        Name of the model
+    method : str
+        name of the method being saved
+
+    Returns
+    -------
+    loaded_model: sklearn.base.BaseEstimator
+        klearn class model instance
+    """
+
+    model_path = os.path.join(MODEL_DIR, model_name)
+    if os.path.isfile(model_path):
+        print(f"{method} -> Loading model from: '{model_path}'")
+        return pickle.load(open(model_path, 'rb'))
     else:
-        print(Fore.RED + f"ERROR: Could not find the model: {modelpath}")
-        print(Style.RESET_ALL)
-        exit(1)
-
-
-def save_tf_model(modelname, model):
-    modelpath = os.path.join(model_output_dir, modelname)
-    os.makedirs(model_output_dir, exist_ok=True)
-    print("DNN -> Saving model to: ", modelpath)
-    model.save(modelpath)
-
-
-def load_tf_model(modelname):
-    modelpath = os.path.join(model_output_dir, modelname)
-    if os.path.isdir(modelpath):
-        return load_model(modelpath)
-    else:
-        print(Fore.RED + f"ERROR: Could not find the directory: {modelpath}")
+        print(Fore.RED + f"ERROR: Could not find the model: '{model_path}'")
         print(Style.RESET_ALL)
         exit(1)
 
 
-def get_dataset(filename):
-    dataset = pd.read_csv(os.path.join(dataset_path, filename))
-    x_train = dataset.iloc[:, :-1].values
-    y_train = dataset.iloc[:, -1].values
-    return x_train, y_train
+def save_tf_model(model_name, model):
+    if model_name.endswith('.h5') or model_name.endswith('.hdf5'):
+        model_path = os.path.join(MODEL_DIR, model_name)
+        os.makedirs(MODEL_DIR, exist_ok=True)
+        print(f"DNN -> Saving model to: '{model_path}'")
+        model.save(model_path)
+    else:
+        print(Fore.YELLOW + f"Warning: Not correct file extension: {model_name} -> should be '.h5' or '.hdf5'")
+
+
+def load_tf_model(model_name):
+    model_path = os.path.join(MODEL_DIR, model_name)
+    if os.path.isfile(model_path) and (model_name.endswith('.h5') or model_name.endswith('.hdf5')):
+        print(f"DNN -> Model loaded from: '{model_path}'")
+        return load_model(model_path, compile=False)
+    else:
+        if not model_name.endswith('.h5'):
+            print(Fore.RED + f"ERROR: Not correct file extension: {model_name} -> should be '.h5' or '.hdf5'")
+        else:
+            print(Fore.RED + f"ERROR: Could not find the model: {model_path}")
+        print(Style.RESET_ALL)
+        exit(1)
 
 
 def save_training_plot(fig, plotname):
-    if not os.path.isdir(training_plot_dir):
-        print(Fore.RED + f'ERROR: Could not find directory: {training_plot_dir}')
+    if not os.path.isdir(TRAINING_PLOT_DIR):
+        print(Fore.RED + f'ERROR: Could not find directory: {TRAINING_PLOT_DIR}')
         print(Style.RESET_ALL)
         exit(1)
     if plotname.endswith('.png'):
-        plot_path = os.path.join(training_plot_dir, plotname)
+        plot_path = os.path.join(TRAINING_PLOT_DIR, plotname)
         fig.savefig(plot_path)
         return plot_path
     else:
@@ -106,25 +113,25 @@ def save_training_plot(fig, plotname):
         return '-1'
 
 
-def plot_tf_model(model, modelname):
-    if not os.path.isdir(training_plot_dir):
-        print(Fore.RED + f'ERROR: Could not find directory: {training_plot_dir}')
+def plot_tf_model(model, model_name):
+    if not os.path.isdir(TRAINING_PLOT_DIR):
+        print(Fore.RED + f'ERROR: Could not find directory: {TRAINING_PLOT_DIR}')
         print(Style.RESET_ALL)
         exit(1)
-    if modelname.endswith('.png'):
-        plot_path = os.path.join(training_plot_dir, modelname)
+    if model_name.endswith('.png'):
+        plot_path = os.path.join(TRAINING_PLOT_DIR, model_name)
         tf.keras.utils.plot_model(model, plot_path, show_shapes=True)
         return plot_path
     else:
-        print(Fore.YELLOW + f'Warning: File extension wrong: ".{modelname.split(".")[-1]}" \t--> should be ".png"')
+        print(Fore.YELLOW + f'Warning: File extension wrong: ".{model_name.split(".")[-1]}" \t--> should be ".png"')
         print(Style.RESET_ALL)
         return '-1'
 
 
-def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, cv=5,
+def plot_learning_sklearn(estimator, model_name, x, y, criterion=[], ylim=None, cv=5,
                           train_sizes=np.linspace(.1, 1.0, 5)):
     if len(estimator) != len(criterion) and criterion:
-        print(Fore.YELLOW + f"Warning: The number of estimators vs number of modelnames is not equal: {len(estimator)}"
+        print(Fore.YELLOW + f"Warning: The number of estimators vs number of model_names is not equal: {len(estimator)}"
                             f" vs. {len(criterion)}")
         return '-1'
     else:
@@ -135,8 +142,8 @@ def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, c
             if ylim is not None:
                 axes[0].set_ylim(*ylim)
             train_sizes, train_scores, test_scores, fit_times, _ = learning_curve(estimator[i], x, y, cv=cv,
-                                                                                train_sizes=train_sizes,
-                                                                                return_times=True)
+                                                                                  train_sizes=train_sizes,
+                                                                                  return_times=True)
             # Compute the mean along the x-axis
             train_scores_mean = np.mean(train_scores, axis=1)
             test_scores_mean = np.mean(test_scores, axis=1)
@@ -145,7 +152,6 @@ def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, c
             train_scores_std = np.std(train_scores, axis=1)
             test_scores_std = np.std(test_scores, axis=1)
             fit_times_std = np.std(fit_times, axis=1)
-
 
             # Plot learning curve
             axes[0].grid()
@@ -167,7 +173,7 @@ def plot_learning_sklearn(estimator, modelname, x, y, criterion=[], ylim=None, c
                 axes[0].legend(loc="best")
             axes[0].set_xlabel("Number of training samples")
             axes[0].set_ylabel("Score")
-            axes[0].set_title(f"Learning curve: {modelname}")
+            axes[0].set_title(f"Learning curve: {model_name}")
             axes[0].grid(True)
 
             # Plot n_samples vs fit_times

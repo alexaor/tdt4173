@@ -1,35 +1,28 @@
 import tensorflow as tf
 from tensorflow.keras import layers
-import gin.tf
 import methods.utils as utils
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 
 
-@gin.configurable(blacklist=['modelname'])
 class DNN:
-    def __init__(self, input_shape, dropout, optimizer_cls, metrics, loss, modelname="", **kwargs):
+    def __init__(self, input_shape, dropout, optimizer_cls, metrics, loss, **kwargs):
         self._kwargs = kwargs
         self._compile_para = {'optimizer': optimizer_cls, 'loss': loss, 'metrics': metrics}
         self._unfitted_model = self.create_model(input_shape, dropout)
         self.epoch_history = []
-        if len(modelname) > 0:
-            self.model = utils.load_tf_model(modelname)
-        else:
-            self.model = self.create_model(input_shape, dropout)
-            self.model.compile(**self._compile_para)
+        self.model = self.create_model(input_shape, dropout)
+        self.model.compile(**self._compile_para)
         self.model.summary()
 
 
     def create_model(self, input_shape, dropout):
         return tf.keras.Sequential([
 
-            layers.Dense(units=40, activation='relu', input_shape=input_shape),
-            layers.Dropout(dropout),
-            layers.Dense(units=30, activation='relu'),
-            layers.Dense(units=16, activation='relu'),
-            layers.Dense(units=8, activation='relu'),
+            layers.Dense(units=64, activation='relu', input_shape=input_shape),
+            layers.Dense(units=20, activation='relu'),
+            layers.Dense(units=10, activation='relu'),
             layers.Dense(units=4, activation='relu'),
             layers.Dense(units=1, activation='sigmoid')
         ])
@@ -39,6 +32,10 @@ class DNN:
 
     def save_model(self, modelname):
         utils.save_tf_model(modelname, self.model)
+
+    def load_model(self, modelname):
+        self.model = utils.load_tf_model(modelname)
+        self.model.compile(**self._compile_para)
 
     def plot_accuracy(self, filename):
         k = self.epoch_history.history['accuracy']

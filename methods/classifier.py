@@ -134,5 +134,4 @@ class Classifier:
             Name of the file of the trained model, required to have a `.sav` extension
         """
 
-        self._model = utils.load_sklearn_model(filename)
-        print(f"{self._name} -> model loaded from: {filename}")
+        self._model = utils.load_sklearn_model(filename, self._name)
