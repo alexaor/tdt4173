@@ -1,60 +1,83 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from methods.classifier import Classifier
-import gin
+from gin import configurable
+from methods.dnn import DNN
 
 
-@gin.configurable
-def decision_tree(**kwargs) -> Classifier:
-    """
-    Method for returning a Decision Tree classifier
+class Models:
 
-    Parameters
-    ----------
-    **kwargs
-        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+    @classmethod
+    @configurable
+    def decision_tree(cls, **kwargs) -> Classifier:
+        """
+        Method for returning a Decision Tree classifier
 
-    Returns
-    -------
-    classifier
-        A Decision Tree Classifier instance of the generic Classifier <methods.classifier.Classifier>
-    """
-    return Classifier(DecisionTreeClassifier, 'Decision Tree', **kwargs)
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments are used to inject hyperparameters from gin the gin configuration file
 
+        Returns
+        -------
+        classifier
+            A Decision Tree Classifier instance of the generic Classifier <methods.classifier.Classifier>
+        """
+        return Classifier(DecisionTreeClassifier, 'Decision Tree', **kwargs)
 
-@gin.configurable
-def random_forest(**kwargs) -> Classifier:
-    """
-    Method for returning a Random Forest classifier
+    @classmethod
+    @configurable
+    def ada_boost(cls, **kwargs) -> Classifier:
+        """
+        Method for returning an Adaptive Boosting classifier
 
-    Parameters
-    ----------
-    **kwargs
-        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments are used to inject hyperparameters from gin the gin configuration file
 
-    Returns
-    -------
-    classifier
-        A Random Forest Classifier instance of the generic Classifier <methods.classifier.Classifier>
-    """
+        Returns
+        -------
+        classifier
+            An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
+        """
+        kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=1, class_weight={0: 1, 1: 3})
+        return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)
 
-    return Classifier(RandomForestClassifier, 'Random Forest', **kwargs)
+    @classmethod
+    @configurable
+    def random_forest(cls, **kwargs) -> Classifier:
+        """
+        Method for returning a Random Forest classifier
 
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments are used to inject hyperparameters from gin the gin configuration file
 
-@gin.configurable
-def ada_boost(**kwargs) -> Classifier:
-    """
-    Method for returning an Adaptive Boosting classifier
+        Returns
+        -------
+        classifier
+            A Random Forest Classifier instance of the generic Classifier <methods.classifier.Classifier>
+        """
 
-    Parameters
-    ----------
-    **kwargs
-        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+        return Classifier(RandomForestClassifier, 'Random Forest', **kwargs)
 
-    Returns
-    -------
-    classifier
-        An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
-    """
-    kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=2, max_features='log2')
-    return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)
+    @classmethod
+    @configurable
+    def dnn(cls, input_shape, **kwargs) -> DNN:
+        """
+        Method for returning a Random Forest classifier
+
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+
+        Returns
+        -------
+        DNN
+            A dnn instance of the generic Classifier <methods.classifier.Classifier>
+        """
+        # TODO
+        return DNN(input_shape, **kwargs)

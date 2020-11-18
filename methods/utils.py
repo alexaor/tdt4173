@@ -12,21 +12,8 @@ import tensorflow as tf
 model_output_dir = pathlib.Path(os.path.join('methods', 'saved_models'))
 model_output_dir.mkdir(exist_ok=True, parents=True)
 
-dataset_path = pathlib.Path('preprocess/datasets')
-
 training_plot_dir = pathlib.Path(os.path.join('methods', 'training_plots'))
 training_plot_dir.mkdir(exist_ok=True, parents=True)
-
-"""
-:param modelpath:   string, path to the model
-:return             bool, true if the file exist and false if it don't
-
-Checks if there is a file in at the end of the modelpath
-"""
-
-
-def model_exist(modelpath):
-    return os.path.isfile(modelpath)
 
 
 """
@@ -41,7 +28,7 @@ def save_sklearn_model(modelname, model, method):
     if modelname.endswith('.sav'):
         modelpath = os.path.join(model_output_dir, modelname)
         os.makedirs(model_output_dir, exist_ok=True)
-        print(f"{method} -> Saving model to: {modelpath}")
+        print(f"{method} -> Saving model to: '{modelpath}'")
         pickle.dump(model, open(modelpath, 'wb'))
     else:
         print(Fore.YELLOW + f"Warning: File extension unknown: {modelname.split('.')[-1]} \t-->\t should be .sav")
@@ -57,38 +44,39 @@ code 1.
 """
 
 
-def load_sklearn_model(modelname):
+def load_sklearn_model(modelname, method):
     modelpath = os.path.join(model_output_dir, modelname)
-    if model_exist(modelpath):
+    if os.path.isfile(modelpath):
+        print(f"{method} -> Loading model from: '{modelpath}'")
         return pickle.load(open(modelpath, 'rb'))
     else:
-        print(Fore.RED + f"ERROR: Could not find the model: {modelpath}")
+        print(Fore.RED + f"ERROR: Could not find the model: '{modelpath}'")
         print(Style.RESET_ALL)
         exit(1)
 
 
 def save_tf_model(modelname, model):
-    modelpath = os.path.join(model_output_dir, modelname)
-    os.makedirs(model_output_dir, exist_ok=True)
-    print("DNN -> Saving model to: ", modelpath)
-    model.save(modelpath)
+    if modelname.endswith('.h5') or modelname.endswith('.hdf5'):
+        modelpath = os.path.join(model_output_dir, modelname)
+        os.makedirs(model_output_dir, exist_ok=True)
+        print(f"DNN -> Saving model to: '{modelpath}'")
+        model.save(modelpath)
+    else:
+        print(Fore.YELLOW + f"Warning: Not correct file extension: {modelname} -> should be '.h5' or '.hdf5'")
 
 
 def load_tf_model(modelname):
     modelpath = os.path.join(model_output_dir, modelname)
-    if os.path.isdir(modelpath):
-        return load_model(modelpath)
+    if os.path.isfile(modelpath) and (modelname.endswith('.h5') or modelname.endswith('.hdf5')):
+        print(f"DNN -> Model loaded from: '{modelpath}'")
+        return load_model(modelpath, compile=False)
     else:
-        print(Fore.RED + f"ERROR: Could not find the directory: {modelpath}")
+        if not modelname.endswith('.h5'):
+            print(Fore.RED + f"ERROR: Not correct file extension: {modelname} -> should be '.h5' or '.hdf5'")
+        else:
+            print(Fore.RED + f"ERROR: Could not find the model: {modelpath}")
         print(Style.RESET_ALL)
         exit(1)
-
-
-def get_dataset(filename):
-    dataset = pd.read_csv(os.path.join(dataset_path, filename))
-    x_train = dataset.iloc[:, :-1].values
-    y_train = dataset.iloc[:, -1].values
-    return x_train, y_train
 
 
 def save_training_plot(fig, plotname):

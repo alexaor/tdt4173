@@ -17,13 +17,14 @@ filename is given it will save the evaluation in the file, regardless it will pr
 """
 def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
     output = ""
+    methods = methods.copy()
     if dnn_conf_matrix is not None:
         kappa = CohenKappa(num_classes=2)
         kappa.update_state(y_true, methods['DNN'])
         methods['DNN'] = dnn_conf_matrix
     for key in methods.keys():
         if key == 'DNN':
-            tn = dnn_conf_matrix[0]; fp = dnn_conf_matrix[1]; fn = dnn_conf_matrix[2]; tp = dnn_conf_matrix[3]
+            tn, fp, fn, tp = dnn_conf_matrix
         else:
             tn, fp, fn, tp = metrics.confusion_matrix(y_true, methods[key]).ravel()
         output += f'------ {key} ------\n'
@@ -187,9 +188,9 @@ def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None):
     ax.set_yticklabels([f'{y * 10} %' for y in range(1, 11)])
     ax.set_xticks(labels_loc + width/numb_methods)
     ax.set_xticklabels(labels)
-    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    ax.legend(loc='best', prop={'size': 20})
     fig.tight_layout()
-    ax.set_ylim(0, 110)
+    ax.set_ylim(0, 65)
     # Save or show plots
     plot_dir = utils.save_plot(fig, filename)
     print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
@@ -218,7 +219,8 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
                   'False positive rate': {},
                   'False negative rate': {},
                   'F1': {},
-                  'Cohen kappa': {}}
+                  'Cohen kappa': {},
+                  'Number of yes': {}}
     for key in methods.keys():
         if key == 'DNN':
             tn = dnn_conf_matrix[0]; fp = dnn_conf_matrix[1]; fn = dnn_conf_matrix[2]; tp = dnn_conf_matrix[3]
@@ -236,6 +238,7 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
             evaluation['Cohen kappa'][key] = metrics.cohen_kappa_score(methods[key], y_true)
         else:
             evaluation['Cohen kappa'][key] = kappa.result().numpy()
+        evaluation['Number of yes'][key] = (fp + tp)/(tn + fp + fn + tp)
     return evaluation
 
 
