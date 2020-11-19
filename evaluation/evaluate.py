@@ -93,6 +93,7 @@ def plot_precision_recall(y_true, methods, filename):
     ax.set_title('Precision Recall Curve')
     ax.grid(True)
     ax.legend(loc='best')
+    ax.set_xlim(0.15, 1.05)
     # Save plot
     file_path = utils.save_plot(fig, filename)
     print(f"Saved Precision Recall curve at: '{file_path}'")
@@ -190,7 +191,7 @@ def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None):
     ax.set_xticklabels(labels)
     ax.legend(loc='best', prop={'size': 20})
     fig.tight_layout()
-    ax.set_ylim(0, 65)
+    ax.set_ylim(0, 90)
     # Save or show plots
     plot_dir = utils.save_plot(fig, filename)
     print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
