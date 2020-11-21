@@ -1,21 +1,30 @@
-from sklearn import metrics
+import evaluation.utils as utils
 import matplotlib.pyplot as plt
 import numpy as np
-import evaluation.utils as utils
+
+from sklearn import metrics
+
 from tensorflow_addons.metrics import CohenKappa
 
 
-"""
-:param y_true:              1d binary array, the true output values
-:param methods:             dict[str, 1d binary array], the predicted output values for a method
-:param filename:            string, name of file to save the evaluation, if empty nothing will be saved
-:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None) -> None:
+    """
+    Iterate through all methods in 'methods' and for each finds the confusion matrix and calculate the
+    accuracy, misclassification, precision, recall, specificity, false positive rate, false negative rate and f1.
+    When done, the evaluation will be printed out to terminal.
 
-The functions iterate through all methods in the dictionary and for each finds the confusion matrix and calculate the 
-accuracy, misclassification, precision, recall, specificity, false positive rate, false negative rate and f1. If the 
-filename is given it will save the evaluation in the file, regardless it will print the evaluation to terminal.
-"""
-def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    filename : string
+        Name of file to save the evaluation, if empty nothing will be saved
+    dnn_conf_matrix : list of ints
+        The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
+    """
+
     output = ""
     methods = methods.copy()
     if dnn_conf_matrix is not None:
@@ -54,15 +63,22 @@ def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None):
     print(output)
 
 
-"""
-:param y_true:              1d binary array, the true output values
-:param methods:             dict[str, 1d binary array], the predicted output values for a method
-:param filename:            string, name of file to save the evaluation, if empty plot will only be shown not saved
 
-Creates a ROC curve with the given inputs, and calculate the AUC for each methods. If no filename is given the plot
-will not be saved, only shown.
-"""
-def plot_roc_auc(y_true, methods, filename):
+def plot_roc_auc(y_true, methods, filename) -> None:
+    """
+    Creates a ROC curve with the methods,and calculate the AUC for each methods. The plot will be saved in the
+    directory: 'results/plots'.
+
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    filename : string
+        Name of file to save the evaluation
+    """
+
     auc = []
     fig, ax = plt.subplots()
     for key in methods.keys():
@@ -83,6 +99,20 @@ def plot_roc_auc(y_true, methods, filename):
 
 
 def plot_precision_recall(y_true, methods, filename):
+    """
+    Creates a Precision Recall curve with the methods, and calculating the absolute precision for each methods.
+    The plot will be saved in the directory: 'results/plots'.
+
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    filename : string
+        Name of file to save the evaluation
+    """
+
     fig, ax = plt.subplots()
     for model in methods.keys():
         ap = metrics.average_precision_score(y_true, methods[model])
@@ -99,16 +129,23 @@ def plot_precision_recall(y_true, methods, filename):
     print(f"Saved Precision Recall curve at: '{file_path}'")
 
 
-"""
-:param y_true:              1d binary array, the true output values
-:param methods:             dictionary[str, 1d binary array], the predicted output values for a method
-:param dirname:             str, name of the directory the plots will be saved in, if empty plots will only be shown
-:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None) -> None:
+    """
+    Makes a separate plot for each evaluation method, where all the methods in the dictionary 'methods' are being
+    compared to one another. The plots will be saved in the directory: 'results/plots/<dirname>'.
 
-Makes a separate plot for each evaluation method, where all the methods in the dictionary 'methods' are being
-compared to one another. The plots are either saved in the directory with given name, or just shown to the user.
-"""
-def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None):
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    dirname : string
+        Name of directory where the plots should be saved
+    dnn_conf_matrix : list of ints
+        The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
+    """
+
     if len(dirname) > 0:
         utils.make_plot_dir(dirname)
     evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
@@ -142,17 +179,25 @@ def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None):
         print(f"Saved all evaluations plot in directory: '{plot_dir}'")
 
 
-"""
-:param y_true:              1d binary array, the true output values
-:param methods:             dictionary[str, 1d binary array], the predicted output values for a method
-:param evallist:            list[str], list of evaluations method that the methods shall be compared against each other
-:param filename:            str, name of the file the plot will be saved as, if empty the plot will not be saved only shown
-:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None) -> None:
+    """
+    Compares the methods in the methods dictionary with the wanted evaluations method. The plot will be saved in the
+    directory: 'results/plots'.
 
-Compares the methods in the methods dictionary with the wanted evaluations method. Either saves the plot, or shows it 
-to the user. 
-"""
-def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None):
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    evallist : list of strings
+        A list of the evaluations the methods will be compared against
+    filename : string
+        Name of directory where the plots should be saved
+    dnn_conf_matrix : list of ints
+        The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
+    """
+
     evallist = [evaluation.lower() for evaluation in evallist]
     all_evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
     evaluations = {}
@@ -197,17 +242,25 @@ def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None):
     print(f"Saved the comparison plot in directory: '{plot_dir}/{filename}'")
 
 
-"""
-:param y_true:              1d binary array, the true output values
-:param methods:             dict[str, 1d binary array], the predicted output values for a method
-:param dnn_conf_matrix:     list, the values in a confusion matrix, sorted by: tn, fp, fn, tp
+def get_all_evaluations(y_true, methods, dnn_conf_matrix) -> dict:
+    """
+    Creates a new dictionary where the evaluations method is the key, the value for the keys are a new dictionary, where
+    the keys are the method and the values are the result for the given evaluation method. This dictionary is returned.
 
-:return evaluation:     dict[str, dict[str, float]], the results for the different evaluations methods
+    Parameters
+    ----------
+    y_true : array
+        An array with the true prediction to match with predictions from the methods
+    methods : dict
+        A dictionary, [method name, 1d binary array], the predicted output values for a method
+    dnn_conf_matrix : list of ints
+        The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
 
-Creates a new dictionary where the evaluations method is the key, the value for the keys are a new dictionary, where 
-the keys are the method and the values are the result for the given evaluation method. This dictionary is returned.
-"""
-def get_all_evaluations(y_true, methods, dnn_conf_matrix):
+    Returns
+    -------
+    evaluation : dict
+        A dictionary of type [str, dict[str, float]], which is the results for the different evaluations methods
+    """
     if dnn_conf_matrix is not None:
         kappa = CohenKappa(num_classes=2)
         kappa.update_state(y_true, methods['DNN'])
@@ -243,108 +296,165 @@ def get_all_evaluations(y_true, methods, dnn_conf_matrix):
     return evaluation
 
 
+def accuracy(tp, tn, total) -> float:
+    """
+    Calculating and returning the accuracy for the given case.
 
-"""
-:param tp:      int, number of true positives 
-:param tn:      int, number of true negatives
-:param total:   int, total number of cases
+    Parameters
+    ----------
+    tp : int
+        Number of true positives
+    tn : int
+        Number of true negatives
+    total : int
+        Total number of cases
 
-:return :       float, the accuracy
-
-Calculating and returning the accuracy for the given case.
-"""
-def accuracy(tp, tn, total):
+    Returns
+    -------
+    accuracy : float
+        The accuracy of the prediction
+    """
     return (tp + tn)/total
 
 
-"""
-:param tp:      int, number of true positives 
-:param tn:      int, number of true negatives
-:param total:   int, total number of cases
+def misclassification(tp, tn, total) -> float:
+    """
+    Calculating and returning the miss classification, the percentage of cases that was wrongly classified.
 
-:return :       float, the misclassification
+    Parameters
+    ----------
+    tp : int
+        Number of true positives
+    tn : int
+        Number of true negatives
+    total : int
+        Total number of cases
 
-Calculating and returning the misclassification, the percentage of cases that was wrongly classified
-"""
-def misclassification(tp, tn, total):
+    Returns
+    -------
+    misclassification : float
+        The miss classifications of the prediction
+    """
     return 1 - accuracy(tp, tn, total)
 
 
-"""
-:param tp:      int, number of true positives 
-:param fp:      int, number of false positives
-
-:return :       float, the precision
-
-Calculating and returning the precision, out of total predicted true,the percentage of how often the model predict 
-accurate.
-"""
 def precision(tp, fp):
+    """
+    Calculating and returning the precision, out of total predicted true,the percentage of how often the model predict
+    accurate.
+
+    Parameters
+    ----------
+    tp : int
+        Number of true positives
+    fp : int
+        Number of false positives
+
+    Returns
+    -------
+    precision : float
+        The precision of the prediction
+    """
     return tp/(tp + fp)
 
 
-"""
-:param tp:      int, number of true positives 
-:param fn:      int, number of false negatives
-
-:return :       float, the recall
-
-Calculating and returning the recall (true positive rate), number of items correctly identified as positive out of 
-total true positives
-"""
 def recall(tp, fn):
+    """
+    Calculating and returning the recall (true positive rate), number of items correctly identified as positive out of
+    total true positives
+
+    Parameters
+    ----------
+    tp : int
+        Number of true positives
+    fn : int
+        Number of false negatives
+
+    Returns
+    -------
+    recall : float
+        The recall of the prediction
+    """
     return tp/(tp + fn)
 
 
-"""
-:param tn:      int, number of true negatives 
-:param fp:      int, number of false positives
-
-:return :       float, the specificity
-
-Calculating and returning the specificity (true negative rate), number of items correctly identified as negative out 
-of total negatives.
-as positive.
-"""
 def specificity(tn, fp):
+    """
+    Calculating and returning the specificity (true negative rate), number of items correctly identified as negative out
+    of total negatives.
+
+    Parameters
+    ----------
+    tn : int
+        Number of true negatives
+    fp : int
+        Number of false positives
+
+    Returns
+    -------
+    specificity : float
+        The specificity of the prediction
+    """
     return tn/(tn + fp)
 
 
-"""
-:param fp:      int, number of false positives 
-:param tn:      int, number of true negatives
-
-:return :       float, the false positive rate
-
-Calculating and returning the fpr, the fraction of all negative instances that the classifier incorrectly identifies 
-as positive.
-"""
 def false_positive_rate(fp, tn):
+    """
+    Calculating and returning the fpr, the fraction of all negative instances that the classifier incorrectly
+    identifies as positive.
+
+    Parameters
+    ----------
+    fp : int
+        Number of false positives
+    tn : int
+        Number of true negatives
+
+    Returns
+    -------
+    false_positive_rate : float
+        The false positive rate of the prediction
+    """
     return fp/(fp + tn)
 
 
-"""
-:param fn:      int, number of false negatives 
-:param pn:      int, number of true positives
-
-:return :       float, the false negative rate
-
-Calculating and returning the fnr, number of items wrongly identified as negative out of total true positives.
-"""
 def false_negative_rate(fn, tp):
+    """
+    Calculating and returning the fnr, number of items wrongly identified as negative out of total true positives.
+
+    Parameters
+    ----------
+    fn : int
+        Number of false negatives
+    tp : int
+        Number of true positives
+
+    Returns
+    -------
+    false_negative_rate : float
+        The false negative rate of the prediction
+    """
     return fn/(fn + tp)
 
 
-"""
-:param tp:      int, number of true positives
-:param fp:      int, number of false positives 
-:param fn:      int, number of false negatives
-
-:return :       float, f1
-
-Calculating and returning the fpr, a score that combines precision-recall into a single number.
-"""
 def f1(tp, fp, fn):
+    """
+    Calculating and returning the f-measure, a score that combines precision recall into a single number.
+
+    Parameters
+    ----------
+    tp : int
+        Number of true positives
+    fp : int
+        Number of false positives
+    fn : int
+        Number of false negatives
+
+    Returns
+    -------
+    f1 : float
+        The f-measure of the prediction
+    """
     p = precision(tp, fp)
     r = recall(tp, fn)
     return (2 * r * p)/(r + p)
