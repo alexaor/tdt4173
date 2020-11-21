@@ -145,7 +145,7 @@ def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None) -> No
     dnn_conf_matrix : list of ints
         The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
     """
-
+    methods = methods.copy()
     if len(dirname) > 0:
         utils.make_plot_dir(dirname)
     evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
@@ -198,6 +198,7 @@ def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None) -
         The confusion matrix to the DNN, where the list is sorted by: tn, fp, fn, tp
     """
 
+    methods = methods.copy()
     evallist = [evaluation.lower() for evaluation in evallist]
     all_evaluations = get_all_evaluations(y_true, methods, dnn_conf_matrix)
     evaluations = {}

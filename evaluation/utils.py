@@ -33,7 +33,7 @@ def save_text(filename, text):
     filepath : str
         If successful the filepath, if not -1
     """
-    
+
     if filename.endswith('.txt'):
         filepath = os.path.join(RESULT_DIR, filename)
         f = open(filepath, "w")
