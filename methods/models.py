@@ -6,6 +6,10 @@ from methods.dnn import DNN
 
 
 class Models:
+    """
+    A static class, there the functions return the class for their respective methods. All their hyperparameters are set
+    in a gin file.
+    """
 
     @classmethod
     @configurable
@@ -71,13 +75,17 @@ class Models:
 
         Parameters
         ----------
+        input_shape : tuple of ints
+            Shape of the samples, I.e., the number of features in the samples
+        initial_bias : list of floats
+            A list with only one float that sets the initial bias on the output layer
         **kwargs
             Keyword arguments are used to inject hyperparameters from gin the gin configuration file
 
         Returns
         -------
         DNN
-            A dnn instance of the generic Classifier <methods.classifier.Classifier>
+            A dnn instance from the class <methods.dnn.DNN>
         """
         # TODO
         return DNN(input_shape=input_shape, initial_bias=initial_bias, **kwargs)

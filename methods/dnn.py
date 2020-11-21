@@ -1,28 +1,66 @@
-import tensorflow as tf
-from tensorflow.keras import layers, metrics
-import methods.utils as utils
 import matplotlib.pyplot as plt
+import methods.utils as utils
+import tensorflow as tf
 import numpy as np
+
 from sklearn.model_selection import KFold, train_test_split
+from tensorflow.keras import layers, metrics
+
+from typing import Tuple, Iterable
 
 
 class DNN:
+    """
+    Class that creates a tensorflow Neural Network with respective functions.
+
+    Parameters
+    ----------
+    input_shape : tuple of ints
+        Shape of the samples, I.e., the number of features in the samples
+    initial_bias : list of floats
+        A list with only one float that sets the initial bias on the output layer
+    dropout : float
+        The dropout rate for the layers, injected from gin configuration file
+    optimizer_cls : tensorflow optimizer object
+        The optimizer to compile the model with, injected from gin configuration file
+    loss : string
+        Name of the loss function to the model, injected from gin configuration file
+    **kwargs
+        Keyword arguments are used to inject hyperparameters from gin the gin configuration file
+    """
+
     def __init__(self, input_shape, initial_bias, dropout, optimizer_cls, loss, **kwargs):
         self._output_bias = initial_bias
+        self._compile_para = {'optimizer': optimizer_cls, 'loss': loss, 'metrics': self._metrics}
         self._kwargs = kwargs
         self._metrics = [
             metrics.Precision(name="precision"),
             metrics.Recall(name="recall"),
             metrics.AUC(name='auc')
         ]
-        self._compile_para = {'optimizer': optimizer_cls, 'loss': loss, 'metrics': self._metrics}
-        self._unfitted_model = self.create_model(input_shape, dropout)
+        self._unfitted_model = self._create_model(input_shape, dropout)  # Used in k-fold cross evaluation
         self.epoch_history = []
-        self.model = self.create_model(input_shape, dropout)
-        self.model.compile(**self._compile_para)
         self.model.summary()
+        self.model = self._create_model(input_shape, dropout)
+        self.model.compile(**self._compile_para)
 
-    def create_model(self, input_shape, dropout):
+    def _create_model(self, input_shape, dropout) -> tf.keras.Sequential:
+        """
+        Builds and returns the neural network.
+
+        Parameters
+        ----------
+        input_shape : tuple
+            The shape of the input samples, should be on the format: (num_features,)
+        dropout : float
+            The dropout rate that will be set on the layers
+
+        Returns
+        -------
+        tf.keras.Sequential
+            The sequential model ready to be compiled and fitted
+        """
+
         return tf.keras.Sequential([
             layers.Dense(units=40, activation='relu', input_shape=input_shape),
             layers.Dropout(dropout),
@@ -40,17 +78,55 @@ class DNN:
                          bias_initializer=tf.keras.initializers.Constant(self._output_bias))
         ])
 
-    def fit(self, x_train, y_train):
+    def fit(self, x_train, y_train) -> None:
+        """
+        Instance method to train the model with given input parameters
+
+        Parameters
+        ----------
+        x_train : numpy.ndarray
+            A numpy.ndarray matrix consisting of n_samples and n_features, used as training input samples
+        y_train : array
+            An array of output sample values used during training
+        """
+
         self.epoch_history = self.model.fit(x_train, y_train, **self._kwargs)
 
-    def save_model(self, modelname):
-        utils.save_tf_model(modelname, self.model)
+    def save_model(self, filename) -> None:
+        """
+        Saves the fitted model to the directory: 'saved_models'.
 
-    def load_model(self, modelname):
-        self.model = utils.load_tf_model(modelname)
+        Parameters
+        ----------
+        filename : string
+            name of the file of the trained model, required to have a `.h5` or `.hdf5` extension
+        """
+        utils.save_tf_model(filename, self.model)
+
+    def load_model(self, filename) -> None:
+        """
+        Loads a model from file which will replace model, and then compile the loaded model.
+
+        Parameters
+        ----------
+        filename : string
+            Name of the file of the trained model, required to have a `.h5` or `.hdf5` extension
+        """
+
+        self.model = utils.load_tf_model(filename)
         self.model.compile(**self._compile_para)
 
-    def plot_training_evaluation(self, filename):
+    def plot_training_evaluation(self, filename) -> None:
+        """
+        Plots the metrics, loss, precision recall and auc for each epoch in a plot, which is saved to the directory:
+        'plots/training_plots'.
+
+        Parameters
+        ----------
+        filename : string
+            name of the file of the trained model, required to have a `.h5` or `.hdf5` extension
+        """
+
         plt.plot(self.epoch_history.history['loss'])
         plt.plot(self.epoch_history.history['precision'])
         plt.plot(self.epoch_history.history['recall'])
@@ -58,10 +134,31 @@ class DNN:
         plt.title('Training evaluation')
         plt.xlabel('epoch')
         plt.legend(['Loss', 'Precision', 'recall', 'AUC'], loc='best')
-        plotpath = utils.save_training_plot(plt, f'dnn_{filename}')
-        print(f'\t DNN -> Saved training plot in directory: "{plotpath}"')
+        plot_path = utils.save_training_plot(plt, f'dnn_{filename}')
+        print(f'\t DNN -> Saved training plot in directory: "{plot_path}"')
 
-    def evaluate(self, x_test, y_true, threshold=0.5):
+    def evaluate(self, x_test, y_true, threshold=0.5) -> Tuple[np.ndarray, Iterable]:
+        """
+        Predicts the output from the given input on the fitted model
+
+        Parameters
+        ----------
+        x_test : numpy.ndarray
+            A numpy.ndarray matrix consisting of n_samples and n_features, used as test input samples
+        y_true : array
+            An array of output sample values used during evaluating
+        threshold : float
+            A float that sets the threshold on if the prediction probability is 0 or 1
+
+        Returns
+        -------
+        y_pred : list of float
+            The predicted output values as probabilities: {0, 1}
+        confusion_matrix : list of ints
+            A list of the variables in the confusion matrix in the order: true negatives, false positives,
+            false negatives and true positives
+        """
+
         y_pred = self.model.predict(x_test, verbose=0)
         tp = tf.keras.metrics.TruePositives(thresholds=threshold)
         tp.update_state(y_true, y_pred)
@@ -78,14 +175,48 @@ class DNN:
         confusion_matrix = [tn, fp, fn, tp]
         return y_pred, confusion_matrix
 
-    def plot_model(self, filename):
+    def plot_model(self, filename) -> None:
+        """
+        Saves a figure of the model architecture in the directory 'plots/training_plots'.
+
+        Parameters
+        ----------
+        filename : string
+            name of the file of the trained model, required to have a `.png` extension
+        """
+
         plotpath = utils.plot_tf_model(self.model, f'dnn_{filename}')
         print(f'\t DNN -> Saved model plot in directory: "{plotpath}"')
 
-    def _learning_evaluation(self, n_splits, dataset):
+    def _fit_kfold(self, n_splits, dataset) -> Tuple[Iterable, Iterable, Iterable]:
+        """
+        Do a k-fold cross evaluation and a normal fit operation on the dataset. Returns the result from the operations.
+
+        Parameters
+        ----------
+        n_splits : int
+            Number of splits to be done on the data, I.e., the k variable
+        dataset : numpy.ndarray
+            A dataset with the output variable still at the last row
+
+        Returns
+        -------
+        cv_mean : list of floats
+            The mean values of the metrics after performing k-fold cross evaluation, the order is: loss, precision,
+            recall, auc
+        cv_std : list of floats
+            The variance of the metrics after performing k-fold cross evaluation, the order is: loss, precision,
+            recall, auc
+        scores : list of floats
+            The scores to the predicting, after the model is trained normally, the order is: loss, precision, recall,
+            auc
+        """
+
+        # Get the indexes to the different k folds
         kfold = KFold(n_splits=n_splits, shuffle=True)
         fold_no = 1
 
+        # Create the input and output from the dataset
         x = dataset[:, :-1]
         y = dataset[:, -1]
 
@@ -121,8 +252,29 @@ class DNN:
         return cv_mean, cv_std, scores
 
     def plot_cross_evaluation(self, n_splits, x_train, y_train, x_test, y_test, filename,
-                              train_sizes=np.linspace(.1, 1.0, 5)):
-        # Merging inputs and targets
+                              train_sizes=np.linspace(.1, 1.0, 5)) -> None:
+        """
+        Perform k-fold cross evaluation on the dataset, and saves the plot in the directory: 'plots/training_plots'.
+
+        Parameters
+        ----------
+        n_splits : int
+            Number of splits to be done on the dataset in k-fold evaluation, I.e., the k variable
+        x_train : numpy.ndarray
+            A numpy.ndarray matrix consisting of n_samples and n_features, used to merge the dataset
+        y_train : array
+            An array of output sample values used to merge the dataset
+        x_test : numpy.ndarray
+            A numpy.ndarray matrix consisting of n_samples and n_features, used to merge the dataset
+        y_test : array
+            An array of output sample values used to merge the dataset
+        filename : string
+            name of the file of the trained model, required to have a `.png` extension
+        train_sizes : numpy.linspace of floats
+            List of floats, (0, 1], which represent the percentage of the dataset to do k-fold cross evaluation on
+        """
+
+        # Merging the dataset parts to one parameter
         x = np.concatenate((x_train, x_test), axis=0)
         y = np.concatenate((y_train, y_test), axis=0)
         dataset = np.zeros((len(x), len(x[0]) + 1), float)
@@ -141,7 +293,7 @@ class DNN:
                 train = dataset
 
             print(f"DNN -> Cross evaluating on dataset size: {len(train)}")
-            mean, std, score = self._learning_evaluation(n_splits, train)
+            mean, std, score = self._fit_kfold(n_splits, train)
 
             cv_mean['Loss'].append(mean[0])
             cv_mean['Precision'].append(mean[1])
@@ -175,5 +327,5 @@ class DNN:
 
             index += 1
 
-        plotpath = utils.save_training_plot(fig, f'dnn_cv_{filename}')
-        print(f'\t DNN -> Saved training plot in directory: "{plotpath}"')
+        plot_path = utils.save_training_plot(fig, f'dnn_cv_{filename}')
+        print(f'\t DNN -> Saved training plot in directory: "{plot_path}"')
