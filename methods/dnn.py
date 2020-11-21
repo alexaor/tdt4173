@@ -270,7 +270,7 @@ class DNN:
             An array of output sample values used to merge the dataset
         filename : string
             name of the file of the trained model, required to have a `.png` extension
-        train_sizes : numpy.linspace of floats
+        train_sizes : array of floats
             List of floats, (0, 1], which represent the percentage of the dataset to do k-fold cross evaluation on
         """
 

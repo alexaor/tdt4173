@@ -1,13 +1,17 @@
 import pathlib
 import pickle
 import os
-import pandas as pd
 import numpy as np
-from tensorflow.keras.models import load_model
-from colorama import Fore, Style
 import matplotlib.pyplot as plt
+
+from tensorflow.keras.models import load_model
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras import Sequential
+
+from colorama import Fore, Style
+
 from sklearn.model_selection import learning_curve
-import tensorflow as tf
+from sklearn.base import BaseEstimator
 
 from configs.project_settings import MODELS_PATH, PLOTS_PATH
 
@@ -18,53 +22,52 @@ TRAINING_PLOT_DIR = pathlib.Path(PLOTS_PATH, "training_plots")
 TRAINING_PLOT_DIR.mkdir(exist_ok=True, parents=True)
 
 
-def save_sklearn_model(model_name, model, method):
+def save_sklearn_model(filename, model, method) -> None:
     """
-    Saves the model with given model_name in a directory specified in project settings
+    Saves the model with given model_name in a directory specified in project settings, model_name need to have
+    extension '.sav'.
 
     Parameters
     ----------
-
-    model_name : str
+    filename : string
         name of the model
-    method : str
+    method : string
         name of the method being saved
     model : sklearn.base.BaseEstimator
         sklearn class model to be saved
     """
 
-    if model_name.endswith('.sav'):
-        model_path = os.path.join(MODEL_DIR, model_name)
+    if filename.endswith('.sav'):
+        model_path = os.path.join(MODEL_DIR, filename)
         os.makedirs(MODEL_DIR, exist_ok=True)
         print(f"{method} -> Saving model to: '{model_path}'")
         pickle.dump(model, open(model_path, 'wb'))
     else:
-        print(Fore.YELLOW + f"Warning: File extension unknown: {model_name.split('.')[-1]} \t-->\t should be .sav")
+        print(Fore.YELLOW + f"Warning: File extension unknown: {filename.split('.')[-1]} \t-->\t should be .sav")
         print(Style.RESET_ALL)
 
 
-def load_sklearn_model(model_name, method):
+def load_sklearn_model(filename, method) -> BaseEstimator:
     """
-    Loads and returns a saved sklearn model instance
+    Loads and returns a saved sklearn model instance, filename need to have the extension: '.sav'.
 
-    Returns the model saved with 'model_name', if the model does not exist it will exit the program with exit with exit
+    Returns the model saved with 'filename', if the model does not exist it will exit the program with exit
     code 1.
 
     Parameters
     ----------
-
-    model_name : str
-        Name of the model
-    method : str
-        name of the method being saved
+    filename : string
+        Name of the file to the model
+    method : string
+        name of the method being loaded
 
     Returns
     -------
     loaded_model: sklearn.base.BaseEstimator
-        klearn class model instance
+        sklearn class model instance
     """
 
-    model_path = os.path.join(MODEL_DIR, model_name)
+    model_path = os.path.join(MODEL_DIR, filename)
     if os.path.isfile(model_path):
         print(f"{method} -> Loading model from: '{model_path}'")
         return pickle.load(open(model_path, 'rb'))
@@ -74,66 +77,160 @@ def load_sklearn_model(model_name, method):
         exit(1)
 
 
-def save_tf_model(model_name, model):
-    if model_name.endswith('.h5') or model_name.endswith('.hdf5'):
-        model_path = os.path.join(MODEL_DIR, model_name)
+def save_tf_model(filename, model) -> None:
+    """
+    Saves the tensor flow model, need the file have '.h5' or '.hdf5' extension.
+
+    Parameters
+    ----------
+    filename : string
+        Name of the file to the model
+    model : tensorflow.keras.Sequential
+        The model that shall be saved
+    """
+
+    if filename.endswith('.h5') or filename.endswith('.hdf5'):
+        model_path = os.path.join(MODEL_DIR, filename)
         os.makedirs(MODEL_DIR, exist_ok=True)
         print(f"DNN -> Saving model to: '{model_path}'")
         model.save(model_path)
     else:
-        print(Fore.YELLOW + f"Warning: Not correct file extension: {model_name} -> should be '.h5' or '.hdf5'")
+        print(
+            Fore.YELLOW + f"Warning: Did not save file. Not correct file extension: {filename} -> should be '.h5'"
+                          f" or '.hdf5'")
 
 
-def load_tf_model(model_name):
-    model_path = os.path.join(MODEL_DIR, model_name)
-    if os.path.isfile(model_path) and (model_name.endswith('.h5') or model_name.endswith('.hdf5')):
+def load_tf_model(filename) -> Sequential:
+    """
+    Loads and returns a saved tensorflow model instance, model_name need to have the extension: '.h5' or '.hdf5'.
+
+    Returns the model saved with 'filename', if the model does not exist it will exit the program with exit
+    code 1.
+
+    Parameters
+    ----------
+    filename : string
+        Name of the file where the model is saved
+
+    Returns
+    -------
+    loaded_model : tensorflow.keras.Sequential
+        Tensorflow model, this model is not compiled
+    """
+
+    model_path = os.path.join(MODEL_DIR, filename)
+    if os.path.isfile(model_path) and (filename.endswith('.h5') or filename.endswith('.hdf5')):
         print(f"DNN -> Model loaded from: '{model_path}'")
         return load_model(model_path, compile=False)
     else:
-        if not model_name.endswith('.h5'):
-            print(Fore.RED + f"ERROR: Not correct file extension: {model_name} -> should be '.h5' or '.hdf5'")
+        if not filename.endswith('.h5'):
+            print(Fore.RED + f"ERROR: Not correct file extension: {filename} -> should be '.h5' or '.hdf5'")
         else:
             print(Fore.RED + f"ERROR: Could not find the model: {model_path}")
         print(Style.RESET_ALL)
         exit(1)
 
 
-def save_training_plot(fig, plotname):
+def save_training_plot(fig, filename) -> str:
+    """
+    Saves the figure with name 'filename' in directory: 'results/plots/training_plots'.
+
+    Parameters
+    ----------
+    fig : matplotlib.pyplot
+        The plot object that shall be saved
+    filename : string
+        Name of the file where the model is saved
+
+    Returns
+    -------
+    path : string
+        The path of where the plot is saved, if it did not manage to save the plot an error is printed out
+        and the return string is '-1'.
+    """
+
     if not os.path.isdir(TRAINING_PLOT_DIR):
         print(Fore.RED + f'ERROR: Could not find directory: {TRAINING_PLOT_DIR}')
         print(Style.RESET_ALL)
         exit(1)
-    if plotname.endswith('.png'):
-        plot_path = os.path.join(TRAINING_PLOT_DIR, plotname)
+    if filename.endswith('.png'):
+        plot_path = os.path.join(TRAINING_PLOT_DIR, filename)
         fig.savefig(plot_path)
         return plot_path
     else:
-        print(Fore.YELLOW + f'Warning: File extension wrong: ".{plotname.split(".")[-1]}" \t--> should be ".png"')
+        print(Fore.YELLOW + f'Warning: File extension wrong: ".{filename.split(".")[-1]}" \t--> should be ".png"')
         print(Style.RESET_ALL)
         return '-1'
 
 
-def plot_tf_model(model, model_name):
+def plot_tf_model(model, filename) -> str:
+    """
+    Plot a tensorflow model architecture and saves it in 'results/plots/training_plots', file extension has
+    to be '.png'.
+
+    Parameters
+    ----------
+    model : tensorflow.keras.Sequential
+        The model object which architecture should be plotted
+    filename : string
+        Name of the file where the model is saved
+
+    Returns
+    -------
+    path : string
+        The path of where the plot is saved, if it did not manage to save the plot an error is printed out
+        and the return string is '-1'.
+    """
+
     if not os.path.isdir(TRAINING_PLOT_DIR):
         print(Fore.RED + f'ERROR: Could not find directory: {TRAINING_PLOT_DIR}')
         print(Style.RESET_ALL)
         exit(1)
-    if model_name.endswith('.png'):
-        plot_path = os.path.join(TRAINING_PLOT_DIR, model_name)
-        tf.keras.utils.plot_model(model, plot_path, show_shapes=True)
+    if filename.endswith('.png'):
+        plot_path = os.path.join(TRAINING_PLOT_DIR, filename)
+        plot_model(model, plot_path, show_shapes=True)
         return plot_path
     else:
-        print(Fore.YELLOW + f'Warning: File extension wrong: ".{model_name.split(".")[-1]}" \t--> should be ".png"')
+        print(Fore.YELLOW + f'Warning: File extension wrong: ".{filename.split(".")[-1]}" \t--> should be ".png"')
         print(Style.RESET_ALL)
         return '-1'
 
 
 def plot_learning_sklearn(estimator, model_name, x, y, criterion=[], ylim=None, cv=5,
-                          train_sizes=np.linspace(.1, 1.0, 5)):
+                          train_sizes=np.linspace(.1, 1.0, 5)) -> plt:
+    """
+    Plot the learning curves for the given estimators given by using k-fold cross evaluation with the function
+    'sklearn.model_selection.learning_curve' and returns the plot.
+
+    Parameters
+    ----------
+    estimator : list of sklearn.base.BaseEstimator
+        A list of estimators that shall be plotted against each other.
+    model_name : string
+        Name of the method
+    x : numpy.ndarray
+        The input values used for plotting the learning curve
+    y : array
+        The output values used for plotting the learning curve
+    criterion : list of strings
+        A list of criterion's which match the estimator
+    ylim : tuple
+        A tuple, (start, end),that sets the limitations on the y axis to the plots.
+    cv : int
+        Number of folds to make in the cross evaluation in, I.e., the k in k-fold cross evaluation
+    train_sizes : array of floats
+        List of floats, (0, 1], which represent the percentage of the dataset to do k-fold cross evaluation on
+
+    Returns
+    -------
+    figure : matplotlib.pyplot
+        The finished plot after the k-fold cross evaluation
+    """
+
     if len(estimator) != len(criterion) and criterion:
         print(Fore.YELLOW + f"Warning: The number of estimators vs number of model_names is not equal: {len(estimator)}"
                             f" vs. {len(criterion)}")
-        return '-1'
+        return plt.figure()
     else:
         plt.figure()
         color = [['r', 'g'], ['y', 'b']]
