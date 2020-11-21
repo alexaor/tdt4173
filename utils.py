@@ -1,18 +1,6 @@
-import pathlib
 from os.path import join
-
 from pandas import read_csv
-from evaluation.evaluate import (
-    plot_precision_recall,
-    plot_roc_auc,
-    plot_evaluation_result,
-    plot_comparison,
-    print_evaluation
-)
 from methods.models import Models
-from preprocessing.preprocessor import create_data_set
-from numpy import log
-
 from configs.project_settings import DATASET_PATH
 
 
