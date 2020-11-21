@@ -41,7 +41,7 @@ class Models:
         classifier
             An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
         """
-        kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=1, class_weight={0: 1, 1: 3})
+        kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=1)#, class_weight={0: 1, 1: 3})
         return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)
 
     @classmethod
@@ -65,7 +65,7 @@ class Models:
 
     @classmethod
     @configurable
-    def dnn(cls, input_shape, **kwargs) -> DNN:
+    def dnn(cls, input_shape, initial_bias, **kwargs) -> DNN:
         """
         Method for returning a Random Forest classifier
 
@@ -80,4 +80,4 @@ class Models:
             A dnn instance of the generic Classifier <methods.classifier.Classifier>
         """
         # TODO
-        return DNN(input_shape, **kwargs)
+        return DNN(input_shape=input_shape, initial_bias=initial_bias, **kwargs)

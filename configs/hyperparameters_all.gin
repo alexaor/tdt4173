@@ -2,44 +2,39 @@
 
 ## Import the python methods files to access the classes
 import methods.models
-import methods.dnn
 import gin.tf.external_configurables
 
 
 ## AdaBoost Classifier - Hyperparameters
 ada_boost.learning_rate = 1             # float, shrinks the contribution of each classifier
-ada_boost.n_estimators = 70             # int, max number of estimators (trees in the forest) at which boosting is terminated
+ada_boost.n_estimators = 50             # int, max number of estimators (trees in the forest) at which boosting is terminated
 
 ## Decision Tree Classifier - Hyperparameters
 decision_tree.criterion = 'entropy'     # {'gini', 'entropy'}, the quality of the split
-decision_tree.max_depth = 10             # int, the maximum depth of the tree, default at None
+decision_tree.max_depth = 6             # int, the maximum depth of the tree, default at None
 decision_tree.splitter = 'best'         # {'best', 'random'}, strategy on how the node split is chosen
 decision_tree.max_features = None       # {'None', 'auto', 'sqrt', 'log2'}, the number of features to consider when splitting
 decision_tree.min_samples_split = 3
-decision_tree.class_weight = {0: 1, 1: 3}
+decision_tree.class_weight = {0:1, 1: 3}
 
 ## Random forest Classifier - Hyperparameters
-random_forest.n_estimators = 60         # int, Number of trees in the forest
+random_forest.n_estimators = 100         # int, Number of trees in the forest
 random_forest.criterion = 'entropy'        # {“gini”, “entropy”}, function to measure the quality of a split
-random_forest.max_depth = 12             # int, maximum depth of the tree
+random_forest.max_depth = 10             # int, maximum depth of the tree
 random_forest.max_features = "auto"     # {“auto”, “sqrt”, “log2”}, max number of features considered for splitting a node
 random_forest.min_samples_split = 2
-random_forest.class_weight = {0: 1, 1: 3}
+random_forest.class_weight = {0:1, 1: 3}
 
 ## Deep Neural Network - Hyperparameters
 # Parameters to the model creation
-dnn.dropout = 0.2                               # float, rate of how many input units which is set to 0
+dnn.dropout = 0.3                               # float, rate of how many input units which is set to 0
 # Parameters to the fitting
-dnn.epochs = 100                                 # Number of training epochs
-dnn.batch_size = 32                            # int, Number of samples per gradient update
-dnn.steps_per_epoch = None                      # int, Total number of steps before one epoch is finished and starting the next epoch. steps_per_epoch = input // batch size
-dnn.validation_steps = None                     # int, Total number of steps before stopping when performing validation at the end of every epoch.
+dnn.epochs = 200                                 # Number of training epochs
+dnn.batch_size = 60                            # int, Number of samples per gradient update
 dnn.validation_split = 0.33
 # Parameters to the compilation
-dnn.optimizer_cls = @tf.train.RMSPropOptimizer()   # the optimization function
-dnn.metrics = ['accuracy', 'mse']               # metrics to review when training
+dnn.optimizer_cls = @tf.train.AdamOptimizer()   # the optimization function
 dnn.loss = 'binary_crossentropy'                # default None, the loss function
 dnn.class_weight = {0:1, 1: 3}
 
 tf.train.RMSPropOptimizer.learning_rate = 0.0001
-tf.train.AdamOptimizer.learning_rate = 0.0001     # Learning rate to the optimizer
