@@ -1,8 +1,8 @@
 import time
 import methods.utils as utils
 from sklearn.model_selection import ShuffleSplit
-from sklearn.tree import DecisionTreeClassifier
-
+from typing import Tuple
+import numpy as np
 
 class Classifier:
     """
@@ -43,9 +43,8 @@ class Classifier:
         x_train : numpy.ndarray
             A numpy.ndarray matrix consisting of n_samples and n_features, used
             as training input samples
-
         y_train : array
-            An array of output sample values used during trianing
+            An array of output sample values used during training
         """
 
         time_0 = time.time()
@@ -65,13 +64,10 @@ class Classifier:
         x_train : numpy.ndarray
             A numpy.ndarray matrix consisting of n_samples and n_features, used
             as training input samples
-
         y_train : array
             An array of output sample values used during training
-
         plot_name : str
             Name of the plot, required to have the file extension `.png`
-
         compare_criterion :  bool
             If the learning curve should compare the two different criterion or not
         """
@@ -90,20 +86,20 @@ class Classifier:
         plot_path = utils.save_training_plot(plot, f'{self._short_name}_{plot_name}')
         print(f'{self._name} -> Saved training plot in directory: "{plot_path}"')
 
-    def predict(self, x_test):
+    def predict(self, x_test) -> Tuple[np.ndarray, np.ndarray]:
         """
         Predicts the output from the given input on the fitted model
 
         Parameters
         ----------
-        x_test : matrix{n_samples, n_features}
-            Training input samples
+        x_test : numpy.ndarray
+            A numpy.ndarray matrix consisting of n_samples and n_features, used
+            as test input samples
 
         Returns
         -------
         y_pred_proba : list of float
             The predicted output values as probabilities: {0, 1}
-
         y_pred_bool : list of bool
             The predicted output values as boolean: [0, 1]
         """

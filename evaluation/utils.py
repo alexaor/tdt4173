@@ -1,7 +1,9 @@
 import pathlib
-import os
-from colorama import Fore, Style
 import shutil
+import os
+
+from colorama import Fore, Style
+
 from configs.project_settings import ROOT_RESULTS_DIR_PATH
 
 # Make a results directory if it does not yet exist
@@ -30,9 +32,8 @@ def save_text(filename, text):
     -------
     filepath : str
         If successful the filepath, if not -1
-
-
     """
+
     if filename.endswith('.txt'):
         filepath = os.path.join(RESULT_DIR, filename)
         f = open(filepath, "w")
@@ -59,6 +60,7 @@ def make_plot_dir(dirname) -> None:
     dirname : str
         Name of the new directory in the plots directory
     """
+
     plot_dir_path = pathlib.Path(os.path.join(PLOTS_DIR, dirname))
     # Make sure that the folder is empty, so there will be no problems with overwriting
     if os.path.isdir(plot_dir_path):
