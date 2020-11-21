@@ -31,18 +31,18 @@ class DNN:
 
     def __init__(self, input_shape, initial_bias, dropout, optimizer_cls, loss, **kwargs):
         self._output_bias = initial_bias
-        self._compile_para = {'optimizer': optimizer_cls, 'loss': loss, 'metrics': self._metrics}
         self._kwargs = kwargs
         self._metrics = [
             metrics.Precision(name="precision"),
             metrics.Recall(name="recall"),
             metrics.AUC(name='auc')
         ]
+        self._compile_para = {'optimizer': optimizer_cls, 'loss': loss, 'metrics': self._metrics}
         self._unfitted_model = self._create_model(input_shape, dropout)  # Used in k-fold cross evaluation
         self.epoch_history = []
-        self.model.summary()
         self.model = self._create_model(input_shape, dropout)
         self.model.compile(**self._compile_para)
+        self.model.summary()
 
     def _create_model(self, input_shape, dropout) -> tf.keras.Sequential:
         """
