@@ -175,19 +175,6 @@ class DNN:
         confusion_matrix = [tn, fp, fn, tp]
         return y_pred, confusion_matrix
 
-    def plot_model(self, filename) -> None:
-        """
-        Saves a figure of the model architecture in the directory 'plots/training_plots'.
-
-        Parameters
-        ----------
-        filename : string
-            name of the file of the trained model, required to have a `.png` extension
-        """
-
-        plotpath = utils.plot_tf_model(self.model, f'dnn_{filename}')
-        print(f'\t DNN -> Saved model plot in directory: "{plotpath}"')
-
     def _fit_kfold(self, n_splits, dataset) -> Tuple[Iterable, Iterable, Iterable]:
         """
         Do a k-fold cross evaluation and a normal fit operation on the dataset. Returns the result from the operations.

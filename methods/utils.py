@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from tensorflow.keras.models import load_model
-from tensorflow.keras.utils import plot_model
 from tensorflow.keras import Sequential
 
 from colorama import Fore, Style
@@ -156,39 +155,6 @@ def save_training_plot(fig, filename) -> str:
     if filename.endswith('.png'):
         plot_path = os.path.join(TRAINING_PLOT_DIR, filename)
         fig.savefig(plot_path)
-        return plot_path
-    else:
-        print(Fore.YELLOW + f'Warning: File extension wrong: ".{filename.split(".")[-1]}" \t--> should be ".png"')
-        print(Style.RESET_ALL)
-        return '-1'
-
-
-def plot_tf_model(model, filename) -> str:
-    """
-    Plot a tensorflow model architecture and saves it in 'results/plots/training_plots', file extension has
-    to be '.png'.
-
-    Parameters
-    ----------
-    model : tensorflow.keras.Sequential
-        The model object which architecture should be plotted
-    filename : string
-        Name of the file where the model is saved
-
-    Returns
-    -------
-    path : string
-        The path of where the plot is saved, if it did not manage to save the plot an error is printed out
-        and the return string is '-1'.
-    """
-
-    if not os.path.isdir(TRAINING_PLOT_DIR):
-        print(Fore.RED + f'ERROR: Could not find directory: {TRAINING_PLOT_DIR}')
-        print(Style.RESET_ALL)
-        exit(1)
-    if filename.endswith('.png'):
-        plot_path = os.path.join(TRAINING_PLOT_DIR, filename)
-        plot_model(model, plot_path, show_shapes=True)
         return plot_path
     else:
         print(Fore.YELLOW + f'Warning: File extension wrong: ".{filename.split(".")[-1]}" \t--> should be ".png"')
