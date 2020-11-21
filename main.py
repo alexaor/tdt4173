@@ -37,7 +37,6 @@ def main():
 
     # === Plot training evaluations of DNN ===
     models['DNN'].plot_cross_evaluation(5, x_train, y_train, x_test, y_test, 'all_features.png')
-    models['DNN'].plot_model('network_50.png')
     models['DNN'].plot_training_evaluation('training_evaluation_50.png')
 
     # === Plot training evaluations of the SKLearn methods ===

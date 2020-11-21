@@ -46,5 +46,3 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
             models[model].plot_learning_curves(x_train, y_train, plotname, compare_criterion)
         elif model != 'DNN':
             models[model].plot_learning_curves(x_train, y_train, plotname, False)
-        else:
-            models[model].plot_accuracy(plotname)
