@@ -14,8 +14,7 @@ packages is included in this section
 ### Use of dependencies
 scikit-learn and keras/tensorflow supply us with class implementations of 
 different machine learning models we are implementing, in addition to
-the `tensorflow-addons` module which is used to **DEAL WITH SOMETHING CHECK WITH 
-TOBIAS**. [`gin-config`](https://github.com/google/gin-config) is a lightweight 
+the `tensorflow-addons` module which is used to calculate Cohen's kappa on the predictions from tensorflow models. [`gin-config`](https://github.com/google/gin-config) is a lightweight 
 library to allow for injection of hyperparameters through a config file which is
 located in the `configs/` directory. `colorama` is used in order to colorize
 terminal output in order to raise warnings.
