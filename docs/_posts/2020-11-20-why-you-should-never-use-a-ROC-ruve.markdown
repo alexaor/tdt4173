@@ -20,7 +20,7 @@ With the ROC curve we have a better visualization on the trade-offs between the 
 regard to the data distribution. A ROC curve use the metrics _true positive rate_ (tpr) and _false positive rate_ (fpr)
 to create the graph. The two metrics are mathematically defined as:
 
-<img src="http://www.sciweavers.org/tex2img.php?eq=tpr%20%3D%20%20%5Cfrac%7BTP%7D%7BC_c%7D%20%5Cquad%2C%20fpr%20%3D%20%5Cfrac%7BFP%7D%7BN_c%7D%20%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="TPR and FPR" width="174" height="46" />
+![TPR and FPR equations](/tdt4173/assets/article_images/2020-11-20-why-you-should-never-use-a-ROC-curve/eq.png)
 
 Where TP and FP are the number of true positives and false positive respectively, P<sub>c</sub> and N<sub>c</sub> are 
 the number of true positives and true negatives respectively. When plotting this two variables, we may get a plot like 
