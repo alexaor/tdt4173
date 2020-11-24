@@ -92,7 +92,7 @@ of matchmaking we could for instance decide that a match should be weighted 0.8,
 should be weighted the remaining 20%.
 
 ## It's a wrap folks
-There are numerous other ways tro try hand handle issues with small imbalanced datasets, but covering all of them is, 
+There are numerous other ways to try hand handle issues with small imbalanced datasets, but covering all of them is, 
 and should not be, the scope of this post. Here we have briefly covered the basics of a neural network and what
 some of our options are when not given a great dataset to work with.
 
