@@ -25,10 +25,15 @@ Dependencies can be installed with your favorite virtualenvironment and package
 manager, there is also a `requirements.txt` for simple pip install with virtualenv
 if desired.
 
-* Python 3.8
-* scikit-learn
-* matplotlib
-* keras
-* gin-config
-* colorama
-* tensorflow-addons
+* python = "^3.8"
+* numpy = "^1.18.5"
+* scikit-learn = "^0.23.2"
+* matplotlib = "^3.3.2"
+* pandas = "^1.1.3"
+* keras = "^2.4.3"
+* tensorflow = "^2.3.1"
+* gin-config = "^0.3.0"
+* colorama = "^0.4.4"
+* sphinx = "^3.3.1"
+* sphinx-rtd-theme = "^0.5.0"
+* tensorflow-addons = "^0.11.2"
