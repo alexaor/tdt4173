@@ -5,6 +5,7 @@
 Source code for the Machine Learning subject TDT4173. This repo contains
 everything required to reproduce project results, in addition to supplementary
 documentation which is hosted at [readthedocs.org](https://tdt4173.readthedocs.io/en/latest/?badge=latest).
+ Supplementary website is deployed at the following [site](https://alexaor.github.io/tdt4173/).
 
 ## Dependencies
 This project is heavily reliant on third-party libraries for implementations
