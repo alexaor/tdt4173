@@ -87,9 +87,9 @@ to adapt to a more _raw_ input.
 
 We also have _weight balancing_. As stated this is a technique that tells the network that we care more for certain
 classifications than others. This fits the goal of a matchmaker, the network should care more about the cases where it 
-classifies two people as a match. Without weight balancing all classification outputs are wighted equally, in the case
+classifies two people as a match. Without weight balancing all classification outputs are weighted equally. In the case
 of matchmaking we could for instance decide that a match should be weighted 0.8, i.e 80% and that a non-match
-should be weighted the remaining 20%.
+should be weighted 0.2.
 
 ## It's a wrap folks
 There are numerous other ways to try hand handle issues with small imbalanced datasets, but covering all of them is, 
