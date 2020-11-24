@@ -1,10 +1,10 @@
 ---
 layout: post
-title:  "Our first Blogpost"
-date:   2020-11-16 14:34:25
-author: "Alexander Orvik"
-author_image: /assets/images/author_alex.jpg
-author_bio: "An IT enthusiast"
+title:  "OSKAR TITLE"
+date:   2020-11-24 18:56:51
+author: "Oskar Veggeland"
+author_image: /assets/images/author_oskar.jpg
+author_bio: "A statistical learning enthusiast
 categories: mediator feature
 tags: featured
 image: /assets/article_images/2014-11-30-mediator_features/night-track.JPG
