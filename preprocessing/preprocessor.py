@@ -17,7 +17,10 @@ def create_data_set(filename, n_features=-1, test_size=0.2,
                     feature_scale=True) -> None:
     """
     Method for creating a data set with specified properties.
-    New data set will be written to the dataset folder
+
+    New data set will be written to the dataset folder. 02_ pre-fixed
+    in order to label it as processed data and then split into training
+    and validation sets. 
 
     Parameters
     ----------
