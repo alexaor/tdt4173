@@ -4,14 +4,12 @@ title: About
 permalink: /about/
 ---
 
-A medium inspired Jekyll blog theme. The basic idea came from the Ghost theme 
-[Readium 2.0](http://www.svenread.com/readium-ghost-theme/). I use mediator on my own blog [The Base](blog.base68.com).
+A project website for the NTNU course [TDT4173 - Machine learning](https://www.ntnu.no/studier/emner/TDT4173). The project
+scope dealt with handling a small an imbalanced dataset and how to improve machine learning algorithm performance under
+such circumstances.
 
-You can **download** the theme here:
-[https://github.com/dirkfabisch/mediator](https://github.com/dirkfabisch/mediator) 
+This website is a supplementary part of the deliverable mimicking a blog-style post inspired by medium-style 
+[articles](https://medium.com/). The different posts cover different aspects of the material we have covered but
+in a more casual manner and with material which did not fit the narrow scope of the main project deliverable.
 
-You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
-
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
-
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
+The project source code is available at [github](https://github.com/alexaor/tdt4173/).
