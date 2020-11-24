@@ -2,6 +2,7 @@ from os.path import join
 from pandas import read_csv
 from methods.models import Models
 from configs.project_settings import DATASET_PATH
+from preprocessing.preprocessor import create_data_set
 
 
 def get_dataset(filename):
@@ -46,3 +47,19 @@ def plot_training_curves(models, x_train, y_train, plotname, compare_criterion=F
             models[model].plot_learning_curves(x_train, y_train, plotname, compare_criterion)
         elif model != 'DNN':
             models[model].plot_learning_curves(x_train, y_train, plotname, False)
+
+
+def setup_data(feature_list=(50,)):
+    """
+    This module creates datasets for feature-selection with 50 features in addition
+    to a set with all features included. Output format is 'features_n' where n is
+    the number of features selected. Dataset with no features selection includes the
+    name all_features
+    """
+    for feature_number in feature_list:
+        print(f"Creating datasets with {feature_number} features")
+        create_data_set(f"features_{feature_number}", n_features=feature_number)
+        print("Datasets created")
+    print("Creating datasets with no feature selections")
+    create_data_set(f"all_features")
+    print("Datasets created")
