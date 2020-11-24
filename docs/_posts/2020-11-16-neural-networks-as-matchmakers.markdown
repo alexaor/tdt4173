@@ -8,7 +8,7 @@ author_bio: "An IT enthusiast"
 categories: mediator feature
 tags: featured
 image: /assets/article_images/2020-11-16-tuning-a-neural-network/header-image.jpg
-image2: /assets/article_images/2014-11-30-mediator_features/night-track-mobile.JPG
+image2: /assets/article_images/2020-11-16-tuning-a-neural-network/header-image.jpg
 ---
 
 There is a lot to consider when dating around, and people are selective. Finding a prospective match one intends
