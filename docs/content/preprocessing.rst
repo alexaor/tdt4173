@@ -1,4 +1,4 @@
-Preprocessor
+Preprocessing
 ************
 Module for performing preprocessing of a relevant dataset
 
