@@ -41,6 +41,4 @@ if desired.
 * tensorflow = "^2.3.1"
 * gin-config = "^0.3.0"
 * colorama = "^0.4.4"
-* sphinx = "^3.3.1"
-* sphinx-rtd-theme = "^0.5.0"
 * tensorflow-addons = "^0.11.2"
