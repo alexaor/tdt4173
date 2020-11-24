@@ -63,7 +63,6 @@ def print_evaluation(y_true, methods, filename="", dnn_conf_matrix=None) -> None
     print(output)
 
 
-
 def plot_roc_auc(y_true, methods, filename) -> None:
     """
     Creates a ROC curve with the methods,and calculate the AUC for each methods. The plot will be saved in the
@@ -168,11 +167,8 @@ def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None) ->
         # Add the values on top of the bars
         for react in reacts:
             height = react.get_height()
-            ax.annotate(round(height, 2),
-                         xy=(react.get_x() + width/2, height),
-                         xytext=(0, 3),
-                         textcoords="offset points",
-                         ha='center', va='bottom')
+            ax.annotate(round(height, 2), xy=(react.get_x() + width/2, height), xytext=(0, 3),
+                        textcoords="offset points", ha='center', va='bottom')
 
         # Save plot
         plot_dir = utils.save_plot(fig, f'{key}.png', dirname)
@@ -224,18 +220,14 @@ def plot_comparison(y_true, methods, evallist, filename, dnn_conf_matrix=None) -
         labels = list(evaluations[method].keys())
         for react in reacts:
             height = react.get_height()
-            ax.annotate(round(height, 2),
-                         xy=(react.get_x() + react.get_width()/2, height),
-                         xytext=(0, 3),
-                         textcoords="offset points",
-                         ha='center', va='bottom')
+            ax.annotate(round(height, 2), xy=(react.get_x() + react.get_width()/2, height), xytext=(0, 3),
+                        textcoords="offset points", ha='center', va='bottom', fontsize=11)
         i += 1
-    ax.set_title('Comparison of  methods')
     ax.set_yticks([y * 10 for y in range(1, 11)])
-    ax.set_yticklabels([f'{y * 10} %' for y in range(1, 11)])
+    ax.set_yticklabels([f'{y * 10} %' for y in range(1, 11)], fontsize=20)
     ax.set_xticks(labels_loc + width/numb_methods)
-    ax.set_xticklabels(labels)
-    ax.legend(loc='best', prop={'size': 20})
+    ax.set_xticklabels(labels, fontsize=25)
+    ax.legend(loc='best', prop={'size': 30})
     fig.tight_layout()
     ax.set_ylim(0, 90)
     # Save or show plots

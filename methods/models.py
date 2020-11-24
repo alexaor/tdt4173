@@ -45,7 +45,7 @@ class Models:
         classifier
             An Adaptive Boosting Classifier instance of the generic Classifier <methods.classifier.Classifier>
         """
-        kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=1)#, class_weight={0: 1, 1: 3})
+        kwargs['base_estimator'] = DecisionTreeClassifier(max_depth=1, class_weight={0: 1, 1: 3})
         return Classifier(AdaBoostClassifier, 'Ada Boost', **kwargs)
 
     @classmethod
