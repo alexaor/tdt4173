@@ -129,7 +129,7 @@ def plot_precision_recall(y_true, methods, filename):
     print(f"Saved Precision Recall curve at: '{file_path}'")
 
 
-def plot_evaluation_result(y_true, methods, dirname, dnn_conf_matrix=None) -> None:
+def plot_evaluation_result(y_true, methods, dirname="", dnn_conf_matrix=None) -> None:
     """
     Makes a separate plot for each evaluation method, where all the methods in the dictionary 'methods' are being
     compared to one another. The plots will be saved in the directory: 'results/plots/<dirname>'.
