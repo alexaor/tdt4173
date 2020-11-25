@@ -15,13 +15,7 @@ image2: /assets/article_images/2014-11-30-mediator_features/night-track-mobile.J
 I was told that my first blogpost should start with a joke, so here goes:
 >Why don't jokes work in octal? Because 7 10 11
 
-Now,
-
-```cpp
-while (I got your intention) {
-        how would you like to train your very own classifition model on the data set of your choosing?
-}
-```
+Now, while I got your intention, how would you like to train your very own classifition model on the data set of your choosing?
 Great! lets get started
 
 
@@ -69,5 +63,4 @@ Not happy with the result? No problem! Just go back to step 2 and try again!
 
 Still not pleased with the result? Send an official complaint to this guy:
 
-![This is image](/tdt4173/assets/images/author_alex.jpg)
-alexaor@stud.ntnu.no
+![alexaor@stud.ntnu.no](/tdt4173/assets/images/author_alex.jpg)
