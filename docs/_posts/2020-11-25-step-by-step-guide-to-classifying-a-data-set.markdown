@@ -69,5 +69,4 @@ Not happy with the result? No problem! Just go back to step 2 and try again!
 
 Still not pleased with the result? Send an official complaint to this guy:
 
-![This is image](/tdt4173/assets/images/author_alex.jpg)
-alexaor@stud.ntnu.no
+![alexaor@stud.ntnu.no](/tdt4173/assets/images/author_alex.jpg)
