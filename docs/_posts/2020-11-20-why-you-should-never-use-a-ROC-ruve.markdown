@@ -49,7 +49,7 @@ better than other, though none of them are doing particullary well. So what are 
 
 ## Solving the problems with a PR curve
 The problems with the ROC curves can be solved with using a Precision Recall curve (PR curve). This post is not going to go in
-depth on what a PR curve are, but simplified it is _precision_ plotted against _recall_. Where precision is
+depth on the PR curve, simplified it is plotting _precision_ against _recall_. Where precision is
 how many labels are predicted correctly of all positive samples and recall are how many of the positive class were labeled
 correctly. 
 
