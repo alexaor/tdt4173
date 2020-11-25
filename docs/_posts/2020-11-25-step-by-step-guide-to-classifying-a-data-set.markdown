@@ -16,14 +16,14 @@ I was told that my first blogpost should start with a joke, so here goes:
 >Why don't jokes work in octal? Because 7 10 11
 
 Now, while I got your intention, how would you like to train your very own classifition model on the data set of your choosing?
-Great! lets get started
+Great, lets get started!
 
 
 # INSTALLS AND PREREQUISITES
 This tutorial will be based on the source code from our [group github repository](https://github.com/alexaor/tdt4173).
 Before we get started, lets go ahead and clone this repository to your computer.
 The README should contain everything you need to know  to download the required dependencies for this tutorial. 
-If you are unfamiliar with package managers and dependencies you should probably read up on this first. [Here is a useful link to get you started](https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/)
+If you are unfamiliar with package managers and dependencies you should probably read up on this first. [Here is a useful link to get you started.](https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/)
 
 
 # Step 1 (Find and download your chosen data set)
@@ -33,11 +33,11 @@ requirements is that it should be in a .csv format and should contain at least o
 When you have found your desired data set, move it to data/datasets/ and overwrite the existing file: 01_raw_data.csv.
 
 To make sure that the downloaded source files are able to train properly you have to make a few adjustments in preprocess/preprocessor.py.
-The function create_data_set() has a parameter, columns, which defaults to a number of indices. These indices corresponds to the features one wishes to use from the data set and needs to be changed in order to fit your chosen data.
+In the function create_data_set(), the function filter_desired_features() is called with a parameter, columns. This parameter contains indices corresponding to the features one wishes to use from the data set and needs to be changed in order to fit your chosen data.
 The most important thing is that your chosen label feature is last index in the column-list.
 
-For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 the column default should look something like this:
-```cpp
+For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 the column variable should look something like this:
+```python
 columns = np.r_[0, 1, 4:9, 2]
 ```
 
