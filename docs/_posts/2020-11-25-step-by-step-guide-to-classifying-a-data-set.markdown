@@ -60,7 +60,4 @@ This is easily done by running the main file. A menu will appear to guide you fu
 
 Not happy with the result? No problem! Just go back to step 2 and try again!
 
-
-Still not pleased with the result? Send an official complaint to this guy:
-
-![alexaor@stud.ntnu.no](/tdt4173/assets/images/author_alex.jpg)
+Happy analysing!
