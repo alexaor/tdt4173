@@ -3,16 +3,16 @@
 
 
 Source code for the Machine Learning subject TDT4173. This repo contains
-everything required to reproduce project results, in addition to supplementary
-documentation which is hosted at [readthedocs.org](https://tdt4173.readthedocs.io/en/latest/?badge=latest).
- Supplementary website is deployed at the following [site](https://alexaor.github.io/tdt4173/).
+everything required to reproduce project results.
+Supplementary website is deployed at the following [site](https://alexaor.github.io/tdt4173/).
 
 
 
 ## Project wizard
 When all required dependencies are installed, the project can be run using a project wizard by running the `main.py`
 file and then following the instructions showing up in the terminal. If desired its possible to execute a more 
-raw implementation in the file `playground.py` and is intended as more of a doodling ground.
+raw implementation in the file `playground.py` and is intended as more of a doodling ground. Changing the hyperparameters
+for the different methods can be done in the `gin` files in the config folder, one for [50]( https://github.com/alexaor/tdt4173/blob/main/configs/hyperparameters_50.gin) features and one for [all](https://github.com/alexaor/tdt4173/blob/main/configs/hyperparameters_all.gin) features.  
 ## Dependencies
 This project is heavily reliant on third-party libraries for implementations
 of classifiers and configuration of said classifiers, a complete list of required
