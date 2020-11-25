@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "OSKAR TITLE"
+title:  "Data classification in 1-2-3"
 date:   2020-11-24 18:56:51
 author: "Oskar Veggeland"
 author_image: /assets/images/author_oskar.jpeg
@@ -26,10 +26,10 @@ Great! lets get started
 
 
 # INSTALLS AND PREREQUISITES
-This tutorial will be based on the source code found at [OUR AWESOME GITHUB](https://github.com/alexaor/tdt4173).
+This tutorial will be based on the source code from our [group github repository](https://github.com/alexaor/tdt4173).
 Before we get started, lets go ahead and clone this repository to your computer.
-The README should contain everything you need to download the required dependencies for this tutorial. 
-If you are unfamiliar with package managers and dependencies you should probably read up on this first. See for example [LINKNAME](https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/)
+The README should contain everything you need to know  to download the required dependencies for this tutorial. 
+If you are unfamiliar with package managers and dependencies you should probably read up on this first. [Here is a useful link to get you started](https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/)
 
 
 # Step 1 (Find and download your chosen data set)
@@ -42,8 +42,8 @@ To make sure that the downloaded source files are able to train properly you hav
 The function create_data_set() has a parameter, columns, which defaults to a number of indices. These indices corresponds to the features one wishes to use from the data set and needs to be changed in order to fit your chosen data.
 The most important thing is that your chosen label feature is last index in the column-list.
 
-For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 your the default should look something like this:
-```python
+For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 the column default should look something like this:
+```cpp
 columns = np.r_[0, 1, 4:9, 2]
 ```
 
@@ -51,7 +51,7 @@ columns = np.r_[0, 1, 4:9, 2]
 
 # Step 2 (Tuning and model selection)
 By default, all models will be trained and evaluated on your data. This includes a decision tree, a random forest, an adaboost and a deep neural network.
-If you wish to only use certain models, this can be done by changing the list of keys in the main function..
+If you wish to only use certain models, this can be done by changing the list of keys in the main function.
 
 Most of the parameters can be tuned via gin configuration files. There are two such files in the configs/ folder.
 These gin files will be read by the source code before building models, so changing the parameters here is the easiest way of tuning models.
@@ -67,26 +67,7 @@ This is easily done by running the main file. A menu will appear to guide you fu
 Not happy with the result? No problem! Just go back to step 2 and try again!
 
 
-
-
-
-
-## Image usage
-Images can be referenced like this:
+Still not pleased with the result? Send an official complaint to this guy:
 
 ![This is image](/tdt4173/assets/images/author_alex.jpg)
-
-
-## Blockquotes
-Blockquotes are written with the `>` marker at the beginning of each newline in the block
->Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
-
-
-### Combinations 
-It is also possible to combine these elements together
-
->Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
->
-> - Apple
-> - Banana
-> - Plum
+alexaor@stud.ntnu.no
