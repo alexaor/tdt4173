@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "OSKAR TITLE"
-date:   2020-11-25 17:56:51
+date:   2020-11-24 18:56:51
 author: "Oskar Veggeland"
 author_image: /assets/images/author_oskar.jpeg
 author_bio: "A statistical learning enthusiast"
@@ -15,7 +15,7 @@ image2: /assets/article_images/2014-11-30-mediator_features/night-track-mobile.J
 I was told that my first blogpost should start with a joke, so here goes:
 >Why don't jokes work in octal? Because 7 10 11
 
-Now, 
+Now,
 
 ```cpp
 while (I got your intention) {
@@ -33,10 +33,21 @@ If you are unfamiliar with package managers and dependencies you should probably
 
 
 # Step 1 (Find and download your chosen data set)
-The very first thing you have to do is find what data set you want to train with. The only 
+The very first thing you have to do is to find the data set you want to train on. The only 
 requirements is that it should be in a .csv format and should contain at least one binary label that you wish to predict.
 [openml](https://www.openml.org/home) and [kaggle](https://www.kaggle.com/datasets) have lots of data sets you can take a swing at. 
-When you have found your desired data set, move it to data/datasets/ and overwrite the existing file: 01_raw_data.csv
+When you have found your desired data set, move it to data/datasets/ and overwrite the existing file: 01_raw_data.csv.
+
+To make sure that the downloaded source files are able to train properly you have to make a few adjustments in preprocess/preprocessor.py.
+The function create_data_set() has a parameter, columns, which defaults to a number of indices. These indices corresponds to the features one wishes to use from the data set and needs to be changed in order to fit your chosen data.
+The most important thing is that your chosen label feature is last index in the column-list.
+
+For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 your the default should look something like this:
+```python
+columns = np.r_[0, 1, 4:9, 2]
+```
+
+
 
 # Step 2 (Tuning and model selection)
 By default, all models will be trained and evaluated on your data. This includes a decision tree, a random forest, an adaboost and a deep neural network.
