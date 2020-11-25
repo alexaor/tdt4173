@@ -1,10 +1,10 @@
 ---
 layout: post
 title:  "OSKAR TITLE"
-date:   2020-11-24 18:56:51
+date:   2020-11-25 17:56:51
 author: "Oskar Veggeland"
-author_image: /assets/images/author_oskar.jpg
-author_bio: "A statistical learning enthusiast
+author_image: /assets/images/author_oskar.jpeg
+author_bio: "A statistical learning enthusiast"
 categories: mediator feature
 tags: featured
 image: /assets/article_images/2014-11-30-mediator_features/night-track.JPG
@@ -15,9 +15,13 @@ image2: /assets/article_images/2014-11-30-mediator_features/night-track-mobile.J
 I was told that my first blogpost should start with a joke, so here goes:
 >Why don't jokes work in octal? Because 7 10 11
 
-Now, While (I got your intention) {
+Now, 
+
+```cpp
+while (I got your intention) {
         how would you like to train your very own classifition model on the data set of your choosing?
 }
+```
 Great! lets get started
 
 
