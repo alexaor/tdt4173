@@ -43,7 +43,7 @@ The function create_data_set() has a parameter, columns, which defaults to a num
 The most important thing is that your chosen label feature is last index in the column-list.
 
 For example, if your chosen label feature is given by the third column in your data and you wish to only keep feature 1,2 and 5 through 9 your the default should look something like this:
-```python
+```cpp
 columns = np.r_[0, 1, 4:9, 2]
 ```
 
