@@ -4,7 +4,6 @@ from numpy import log
 from evaluation.evaluate import (
     plot_precision_recall,
     plot_roc_auc,
-    plot_evaluation_result,
     plot_comparison,
 )
 from utils import (
@@ -12,8 +11,8 @@ from utils import (
     get_models,
     get_all_predictions,
     fit_all_models,
-    plot_training_curves,
     setup_data,
+    plot_training_curves
 )
 
 
@@ -25,9 +24,12 @@ def kill(msg, callback=None):
         callback()
 
 
-def on_interrupt(func, callback):
+def on_interrupt(func, callback, *args):
     try:
-        func()
+        if args:
+            func(args[0])
+        else:
+            func()
     except KeyboardInterrupt:
         callback()
 
@@ -53,7 +55,6 @@ def main(name_of_dataset):
         models_bool['DNN'] = models_proba['DNN'].copy()
 
     # === Plot training evaluations of DNN ===
-    models['DNN'].plot_cross_evaluation(5, x_train, y_train, x_test, y_test, f'{name_of_dataset}.png')
     models['DNN'].plot_training_evaluation(f'training_evaluation_{name_of_dataset}.png')
 
     # === Plot training evaluations of the SKLearn methods ===
@@ -61,9 +62,8 @@ def main(name_of_dataset):
 
     # === Plot different training evaluations ===
     plot_roc_auc(y_test, models_proba, f'roc_{name_of_dataset}.png')
-    plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
-                    dnn_conf_matrix=dnn_confusion_matrix, filename=f'comparison_{name_of_dataset}_no_class_weight.png')
+                    dnn_conf_matrix=dnn_confusion_matrix, filename=f'comparison_{name_of_dataset}.png')
     plot_precision_recall(y_test, models_proba, f'pr_{name_of_dataset}.png')
 
 
@@ -90,10 +90,10 @@ def menu():
         on_interrupt(setup_data, menu)
     elif pindex == 2:
         parse_config_file('configs/hyperparameters_50.gin')
-        on_interrupt(main("features_50"), menu)
+        on_interrupt(main, menu, "features_50")
     elif pindex == 3:
         parse_config_file("configs/hyperparameters_all.gin")
-        on_interrupt(main("all_features"), menu)
+        on_interrupt(main, menu, "all_features")
     else:
         print("Invalid option")
     menu()
