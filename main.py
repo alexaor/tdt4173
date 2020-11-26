@@ -4,7 +4,6 @@ from numpy import log
 from evaluation.evaluate import (
     plot_precision_recall,
     plot_roc_auc,
-    plot_evaluation_result,
     plot_comparison,
 )
 from utils import (
@@ -12,7 +11,6 @@ from utils import (
     get_models,
     get_all_predictions,
     fit_all_models,
-    plot_training_curves,
     setup_data,
 )
 
@@ -53,15 +51,10 @@ def main(name_of_dataset):
         models_bool['DNN'] = models_proba['DNN'].copy()
 
     # === Plot training evaluations of DNN ===
-    models['DNN'].plot_cross_evaluation(5, x_train, y_train, x_test, y_test, f'{name_of_dataset}.png')
     models['DNN'].plot_training_evaluation(f'training_evaluation_{name_of_dataset}.png')
-
-    # === Plot training evaluations of the SKLearn methods ===
-    plot_training_curves(models, x_train, y_train, f'{name_of_dataset}.png', True)
 
     # === Plot different training evaluations ===
     plot_roc_auc(y_test, models_proba, f'roc_{name_of_dataset}.png')
-    plot_evaluation_result(y_test, models_bool, dnn_conf_matrix=dnn_confusion_matrix)
     plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
                     dnn_conf_matrix=dnn_confusion_matrix, filename=f'comparison_{name_of_dataset}_no_class_weight.png')
     plot_precision_recall(y_test, models_proba, f'pr_{name_of_dataset}.png')
