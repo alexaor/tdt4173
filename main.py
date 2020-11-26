@@ -12,6 +12,7 @@ from utils import (
     get_all_predictions,
     fit_all_models,
     setup_data,
+    plot_training_curves
 )
 
 
@@ -23,9 +24,12 @@ def kill(msg, callback=None):
         callback()
 
 
-def on_interrupt(func, callback):
+def on_interrupt(func, callback, *args):
     try:
-        func()
+        if args:
+            func(args[0])
+        else:
+            func()
     except KeyboardInterrupt:
         callback()
 
@@ -52,6 +56,9 @@ def main(name_of_dataset):
 
     # === Plot training evaluations of DNN ===
     models['DNN'].plot_training_evaluation(f'training_evaluation_{name_of_dataset}.png')
+
+    # === Plot training evaluations of the SKLearn methods ===
+    plot_training_curves(models, x_train, y_train, f'{name_of_dataset}.png', True)
 
     # === Plot different training evaluations ===
     plot_roc_auc(y_test, models_proba, f'roc_{name_of_dataset}.png')
@@ -83,10 +90,10 @@ def menu():
         on_interrupt(setup_data, menu)
     elif pindex == 2:
         parse_config_file('configs/hyperparameters_50.gin')
-        on_interrupt(main("features_50"), menu)
+        on_interrupt(main, menu, "features_50")
     elif pindex == 3:
         parse_config_file("configs/hyperparameters_all.gin")
-        on_interrupt(main("all_features"), menu)
+        on_interrupt(main, menu, "all_features")
     else:
         print("Invalid option")
     menu()
