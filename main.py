@@ -56,7 +56,7 @@ def main(name_of_dataset):
     # === Plot different training evaluations ===
     plot_roc_auc(y_test, models_proba, f'roc_{name_of_dataset}.png')
     plot_comparison(y_test, models_bool, ['Cohen kappa', 'f1', 'Precision', 'Recall', 'Number of yes'],
-                    dnn_conf_matrix=dnn_confusion_matrix, filename=f'comparison_{name_of_dataset}_no_class_weight.png')
+                    dnn_conf_matrix=dnn_confusion_matrix, filename=f'comparison_{name_of_dataset}.png')
     plot_precision_recall(y_test, models_proba, f'pr_{name_of_dataset}.png')
 
 
